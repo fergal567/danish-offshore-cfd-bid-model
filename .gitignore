@@ -1,0 +1,26 @@
+﻿# Python / Jupyter
+.venv/
+**/.venv/
+__pycache__/
+.ipynb_checkpoints/
+.pytest_cache/
+
+# Large or re-creatable data (scripts download it)
+step2/data/era5_*
+*.nc
+*.grib
+step3/data/
+
+# Third-party documents (link to them instead of re-publishing)
+*.pdf
+
+# Secrets
+.cdsapirc
+.env
+
+# Browser partial downloads and third-party spreadsheets
+*.crdownload
+*.xlsx
+
+# API keys
+.cdsapirc*
