@@ -23,7 +23,10 @@ def _iso(ts):
 
 
 def fake_records(dataset, start_utc, end_utc, areas, columns=None, **_):
-    """Mimic the API: naive ISO timestamps, padded window, DKK and EUR prices."""
+    """Mimic the API: naive ISO timestamps, DKK and EUR prices, and the same
+    one-day padding on each side that the real fetch_records request uses."""
+    start_utc = start_utc - pd.Timedelta(days=1)
+    end_utc = end_utc + pd.Timedelta(days=1)
     out = []
     if dataset == "Elspotprices":
         idx = pd.date_range(start_utc, end_utc, freq="h", inclusive="left")
@@ -129,6 +132,21 @@ def test_wind_hourly_sum():
 
 
 # ---------------------------------------------------------------- end to end
+def test_multi_year_padding_overlap_not_double_counted(tmp_path, monkeypatch):
+    # Yearly requests overlap by a day at each New Year; prices must not show
+    # extra MTUs and wind energy must not be summed twice.
+    monkeypatch.setattr(eds, "fetch_records", fake_records)
+    monkeypatch.setattr(eds.time, "sleep", lambda *_: None)
+    assert eds.main(["--start", "2023", "--end", "2024", "--outdir", str(tmp_path), "--wind", "--pause", "0"]) == 0
+    p = pd.read_csv(tmp_path / "prices_hourly_utc_2023_2024.csv")
+    assert (p["n_mtu"] == p["n_mtu_expected"]).all() and p["complete"].all()
+    q = pd.read_csv(tmp_path / "download_qa_2023_2024.csv")
+    assert q["incomplete_hours"].sum() == 0
+    w = pd.read_csv(tmp_path / "offshore_wind_hourly_utc_2023_2024.csv")
+    assert (w["offshore_mwh"] == 510.0).all()
+
+
+
 def test_main_end_to_end(tmp_path, monkeypatch):
     monkeypatch.setattr(eds, "fetch_records", fake_records)
     monkeypatch.setattr(eds.time, "sleep", lambda *_: None)

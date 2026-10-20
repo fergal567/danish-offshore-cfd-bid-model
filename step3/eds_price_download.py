@@ -287,6 +287,8 @@ def wind_records_to_hourly(records: list[dict], start_utc: pd.Timestamp, end_utc
         return pd.DataFrame(columns=["time_utc", "area", "offshore_mwh"])
     df = pd.DataFrame.from_records(records)
     tcol = next(c for c in ("HourUTC", "TimeUTC", "Minutes15UTC") if c in df.columns)
+    # Overlapping yearly requests return New-Year days twice; energy must not be summed twice.
+    df = df.drop_duplicates([tcol, "PriceArea"], keep="last")
     df["time_utc"] = pd.to_datetime(df[tcol]).dt.tz_localize("UTC").dt.floor("h")
     df["area"] = df["PriceArea"].astype(str)
     for c in WIND_COLS:
@@ -361,6 +363,8 @@ def main(argv: list[str] | None = None) -> int:
             if recs:
                 mtu_frames.append(records_to_mtu_frame(recs, ds))
     mtu = pd.concat(mtu_frames, ignore_index=True)
+    # Yearly requests are padded by a day on each side, so New-Year days arrive twice.
+    mtu = mtu.drop_duplicates(["time_utc", "area"], keep="last")
 
     last_hour = min(end_utc, mtu["time_utc"].max().floor("h") + pd.Timedelta(hours=1))
     hourly = mtu_to_hourly(mtu, start_utc, last_hour)
