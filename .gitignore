@@ -40,3 +40,11 @@ step4/data/
 
 # Browser partial downloads
 *.crdownload
+
+# LaTeX build files; keep the one-page summary PDF
+*.aux
+*.log
+*.out
+*.synctex.gz
+summary/carousel_p*.png
+!summary/project1_summary.pdf
