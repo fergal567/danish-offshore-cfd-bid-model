@@ -259,3 +259,16 @@ def test_yield_profile_matches_step2(inputs):
     for site in d.SITES:
         prof = d.monthly_profile(inputs.aap[site])
         assert prof["aap_mwh"].sum() / 1e3 == pytest.approx(ys[ys.site == site]["aap_proxy_GWh"].mean(), rel=2e-3)
+
+
+@pytest.mark.skipif(not DATA, reason="step2/4/5 data files not present")
+def test_1995_used_for_pairing_only(inputs):
+    """Reconstructed 1995 AAP feeds method B but must not change the P50 yield profile."""
+    if not inputs.aap_1995:
+        pytest.skip("run step5/reconstruct_aap_1995.py first")
+    for site in inputs.aap_1995:
+        pair = inputs.aap_for_pairing(site)
+        assert pair.index.year.min() == 1995 and len(pair) == len(inputs.aap[site]) + 8760
+        p = d.make_params(inputs, site)
+        assert p.aap_monthly.sum() == pytest.approx(d.monthly_profile(inputs.aap[site])["aap_mwh"].sum())
+        assert d.method_b(inputs.af25_hourly, pair, d.SITES[site]["zone"]).climate_years_used == (1995, 2008, 2009)

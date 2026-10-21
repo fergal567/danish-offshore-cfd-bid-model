@@ -64,6 +64,7 @@ class Paths:
     yield_summary: Path = REPO / "step2" / "outputs" / "yield_annual_summary.csv"
     hist_monthly: Path = REPO / "step3" / "data" / "outputs" / "reference_price_monthly_era5.csv"
     af25_xlsx: Path = REPO / "step5" / "data" / "AF25 - datasæt - elprisfremskrivning.xlsx"
+    aap_1995_dir: Path = REPO / "step5" / "data"               # aap_hourly_1995_<SITE>.csv (reconstruct_aap_1995.py)
 
 
 @dataclass
@@ -74,6 +75,13 @@ class Inputs:
     af25_annual: dict
     hist_monthly: pd.DataFrame
     yield_summary: pd.DataFrame
+    aap_1995: dict = field(default_factory=dict)   # site -> hourly 1995 AAP (method B only, not P50 yield)
+
+    def aap_for_pairing(self, site: str) -> pd.DataFrame:
+        """2006–2025 AAP plus reconstructed 1995 if available (for AF25 climate-year pairing)."""
+        if site in self.aap_1995:
+            return pd.concat([self.aap_1995[site], self.aap[site]]).sort_index()
+        return self.aap[site]
 
 
 def load_cost_inputs(path: Path) -> dict:
@@ -122,6 +130,8 @@ def load_inputs(paths: Paths | None = None) -> Inputs:
         af25_annual=annual,
         hist_monthly=pd.read_csv(paths.hist_monthly),
         yield_summary=pd.read_csv(paths.yield_summary),
+        aap_1995={s: load_aap_hourly(paths.aap_1995_dir / f"aap_hourly_1995_{s}.csv") for s in SITES
+                  if (paths.aap_1995_dir / f"aap_hourly_1995_{s}.csv").exists()},
     )
 
 
@@ -265,7 +275,7 @@ def build_price_scenarios(inputs: Inputs, site: str, years=range(2026, 2075)) ->
     """S1–S5 from price_scenarios_method.md §4 for one site, real 2026 DKK."""
     zone = SITES[site]["zone"]
     years = np.arange(years.start, years.stop)
-    mb = method_b(inputs.af25_hourly, inputs.aap[site], zone)
+    mb = method_b(inputs.af25_hourly, inputs.aap_for_pairing(site), zone)
     central = np.array(inputs.af25_annual["Spot"][zone]) * AF25_TO_2026            # Ext (published)
     by_c = np.stack([mb.level_by_climate[c] for c in CLIMATE_WEIGHTS]) * AF25_TO_2026
     low, high = by_c.min(0), by_c.max(0)                                            # Ext (= price note T1)

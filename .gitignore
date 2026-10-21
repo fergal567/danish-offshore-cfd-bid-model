@@ -29,3 +29,5 @@ step2/outputs/*.csv.gz
 step4/data/
 
 step5/data/
+
+data/
