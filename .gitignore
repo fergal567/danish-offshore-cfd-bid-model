@@ -27,3 +27,5 @@ step3/data/
 step2/data/aap_hourly_*.csv
 step2/outputs/*.csv.gz
 step4/data/
+
+step5/data/
