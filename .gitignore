@@ -1,33 +1,42 @@
-﻿# Python / Jupyter
+# Python / Jupyter
 .venv/
-**/.venv/
 __pycache__/
 .ipynb_checkpoints/
 .pytest_cache/
 
-# Large or re-creatable data (scripts download it)
+# Editors, Windows, OneDrive and Office temp files
+.vscode/
+.idea/
+desktop.ini
+Thumbs.db
+~$*
+*.tmp
+
+# Data the scripts recreate
 step2/data/era5_*
-*.nc
-*.grib
-step3/data/
-
-# Third-party documents (link to them instead of re-publishing)
-*.pdf
-
-# Secrets
-.cdsapirc
-.env
-
-# Browser partial downloads and third-party spreadsheets
-*.crdownload
-*.xlsx
-
-# API keys
-.cdsapirc*
 step2/data/aap_hourly_*.csv
 step2/outputs/*.csv.gz
-step4/data/
-
+step3/data/
 step5/data/
+/data/
+*.nc
+*.grib
 
-data/
+# Third-party files that are not redistributed (link to the source instead)
+step4/data/
+*.pdf
+*.xlsx
+*.xls
+*.xlsm
+*.docx
+*.zip
+
+# Secrets and API keys
+.cdsapirc*
+.env
+.env.*
+*.key
+*.pem
+
+# Browser partial downloads
+*.crdownload
