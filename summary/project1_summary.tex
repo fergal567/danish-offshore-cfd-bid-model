@@ -1,0 +1,101 @@
+% Project 1 one-page summary. Build from this folder: pdflatex project1_summary.tex
+% Figures: run `python summary/make_figures.py` from the repo root first.
+% Numbers are from step5/bid_calibration_memo.md (21 Oct 2026, after the step-7 re-run), real 2026 DKK; EUR at DKK 7.46.
+\documentclass[10pt,a4paper]{article}
+\usepackage[T1]{fontenc}
+\usepackage[utf8]{inputenc}
+\usepackage{charter}
+\usepackage[a4paper,top=1.0cm,bottom=0.9cm,left=1.6cm,right=1.6cm]{geometry}
+\usepackage{graphicx}
+\usepackage{booktabs}
+\usepackage{array}
+\usepackage{xcolor}
+\usepackage{microtype}
+\usepackage[hidelinks]{hyperref}
+\pagestyle{empty}
+\setlength{\parindent}{0pt}
+\setlength{\parskip}{0pt}
+
+% ---- Edit your contact line here (e.g. add a LinkedIn URL) ----
+\newcommand{\contactline}{\href{https://github.com/fergal567/danish-offshore-cfd-bid-model}{github.com/fergal567/danish-offshore-cfd-bid-model}}
+
+\definecolor{grey}{HTML}{555555}
+\newcommand{\head}[1]{\vspace{4pt}{\bfseries #1}\par\vspace{1pt}{\color{grey}\rule{\linewidth}{0.4pt}}\par\vspace{3pt}}
+
+\begin{document}
+
+{\bfseries\Large Reverse-engineering Vattenfall's 2026 Danish offshore wind bids}\par
+\vspace{2pt}
+{\itshape What do DKK 504/MWh (Nordsøen Midt) and DKK 542/MWh (Hesselø) imply about cost, return and wind?}\par
+\vspace{3pt}
+{\small\color{grey} Fergal Israel, MSc Wind Energy, Technical University of Denmark (DTU) \quad October 2026}\par
+
+\vspace{4pt}
+\rule{\linewidth}{0.8pt}\par\vspace{4pt}
+{\fontsize{11}{14}\selectfont Vattenfall's winning prices are 3--6\,\% below what a public-data model needs to break even. They work at a real after-tax return of about 4.5--4.7\,\%, about 1\,pp above Vattenfall's own discount rate for wind, or if it builds 4--6\,\% cheaper than my estimate from Danish Energy Agency (DEA) data. With 15\,MW turbine costs the return falls below that rate: the bids look like a bet on 20\,MW turbines. Nordsøen Midt carries more downside: its cap on state payments can run out if power prices are low.\par}
+\vspace{4pt}\rule{\linewidth}{0.8pt}\par
+
+\vspace{2pt}
+\begin{minipage}[t]{0.49\textwidth}
+\head{The gap: awarded price vs my base-case break-even}
+\includegraphics[width=\linewidth]{fig_gap.png}
+\end{minipage}\hfill
+\begin{minipage}[t]{0.47\textwidth}
+\head{Any one of these closes the gap}
+\small
+\begin{tabular}{@{}>{\raggedright\arraybackslash}p{0.42\linewidth}>{\raggedleft\arraybackslash}p{0.30\linewidth}>{\raggedleft\arraybackslash}p{0.22\linewidth}@{}}
+ & Nordsøen Midt & Hesselø \\
+\midrule
+Return, real after tax & 4.5\,\% & 4.7\,\% \\[3pt]
+Build cost, DKK m/MW & 20.9 & 21.4 \\[3pt]
+Wind output & P10 & P10 \\
+\bottomrule
+\end{tabular}\par
+\vspace{3pt}
+{\footnotesize\color{grey} Base case: 5.0\,\% return (real, after tax), DKK 22.3m/MW (EUR 3.0m), P50 output. DKK 20.9m and 21.4m are EUR 2.8m and 2.9m. The levers are alternatives, not additive. P10 is a high-output case with a 10\,\% chance of being exceeded.}
+\end{minipage}
+
+\head{Key numbers}
+\small
+\begin{tabular}{@{}>{\raggedright\arraybackslash}p{0.50\linewidth}>{\raggedleft\arraybackslash}p{0.23\linewidth}>{\raggedleft\arraybackslash}p{0.23\linewidth}@{}}
+ & Nordsøen Midt & Hesselø \\
+\midrule
+Size and price zone & 1,005\,MW, West Denmark & 795\,MW, East Denmark \\
+Awarded strike price & DKK 504/MWh {\color{grey}(EUR 67.6)} & DKK 542/MWh {\color{grey}(EUR 72.7)} \\
+Break-even strike, base case & DKK 533/MWh & DKK 559/MWh \\
+Project value (NPV) at the awarded price & $-$DKK 1.0bn {\color{grey}($-$EUR 0.13bn)} & $-$DKK 0.45bn {\color{grey}($-$EUR 0.06bn)} \\
+State payment cap: average top-up it funds over 20 years & DKK 167/MWh & DKK 313/MWh \\
+Return at the awarded price: 15\,MW vs 20\,MW turbines$^{*}$ & 2.8\,\% vs 4.8\,\% & 3.1\,\% vs 5.0\,\% \\
+Vattenfall's discount rate for wind, real after tax$^{\dagger}$ & \multicolumn{2}{r}{3.6--5.3\,\% (all its wind assets)} \\
+\bottomrule
+\end{tabular}\par
+\vspace{2pt}
+{\footnotesize\color{grey} $^{*}$The base case uses DEA costs for 2030 investment decisions, which assume 20\,MW turbines, with output from a 15\,MW turbine. The 15\,MW case swaps in DEA costs for 15\,MW units; the 20\,MW case adds the matching 20\,MW output. $^{\dagger}$Vattenfall Annual and Sustainability Report 2025, Note 27: 5.7--7.4\,\% after tax, read as nominal.}
+
+\head{What moves the break-even price (one input at a time)}
+\centering\includegraphics[width=0.80\linewidth]{fig_tornado_summary.png}\par\raggedright\par
+\vspace{1pt}
+{\footnotesize\color{grey} Red: the state's payment cap is used up, so a higher strike price adds almost no value and the break-even jumps or disappears. This happens three times at Nordsøen Midt and never at Hesselø.}
+
+\vspace{2pt}
+\begin{minipage}[t]{0.31\textwidth}
+\head{What it means for the next tenders}
+\footnotesize
+Return requirements and turbine costs decided these bids more than wind did. Nordsøen Syd (bids due October 2028) has a DKK 6.6bn cap, under half of Nordsøen Midt's (about DKK 75/MWh of top-up), so its bidders must price low-price risk explicitly. {\color{grey}(My interpretation.)}
+\end{minipage}\hfill
+\begin{minipage}[t]{0.31\textwidth}
+\head{How it was built}
+\footnotesize
+Contract rules from the tender documents. Hourly wind 2006--2025 (ERA5) scaled to Energinet site measurements; 15\,MW turbine. Danish prices 2016--2025 and the DEA's outlook. DEA costs adjusted for distance and depth. Monthly 30-year cash-flow model in Python with Danish tax rules; 45 tests.
+\end{minipage}\hfill
+\begin{minipage}[t]{0.31\textwidth}
+\head{Limits}
+\footnotesize
+Contract terms use the Nordsøen Syd documents as a proxy. The DEA's lower fleet price capture is run as a downside. Vattenfall's rate covers all its wind assets; tax pools follow one ruling (SKM2025.37.SR). Public data only; not affiliated with Vattenfall, the DEA or Energinet.
+\end{minipage}
+
+\vspace{6pt}
+{\color{grey}\rule{\linewidth}{0.4pt}}\par\vspace{2pt}
+{\footnotesize Skills: Python (pandas, SciPy), DCF and bid modelling, wind-resource analysis, tender-document review. \\ Code, data sources and tests: \contactline}
+
+\end{document}
