@@ -1,0 +1,24 @@
+label,central,lower,upper,note,ref
+Generating capacity for one unit [MW_e],20,,,A,1
+Forced outage [],0.02,,,B,
+Planned outage [weeks per year],0.5,,,B,
+Technical lifetime [years],30,,,C,
+Construction time [years],3.5,,,D,2
+Space requirement [1000 m2/MW_e],166.66666666666666,,,E,
+Nominal investment (*total) [MEUR/MW_e],2.3931344873524045,,,"A, F",1
+Nominal investment (project development etc.) [MEUR/MW_e],0.16835206001619485,,,"A, F",1
+Nominal investment (turbines) [MEUR/MW_e],0.9306086579232158,,,"A, F",1
+Nominal investment (foundation) [MEUR/MW_e],0.4136038479658737,,,"A, ",1
+Nominal investment (array cables) [MEUR/MW_e],0.04208801500404871,,,"A, F",1
+Nominal investment (substation) [MEUR/MW_e],0.5736981465136805,,,G,
+Nominal investment (export cables) [MEUR/MW_e],0.26478375992939096,,,G,
+Fixed O&M (*total) [EUR/MW_e/y],34000,,,"A, F",2
+Variable O&M (*total) [EUR/MWh_e],3.446698733048947,,,"A, F",2
+Hub height [m],170,,,A,3
+Rotor diameter [m],280,,,"A, H",
+Specific power [W_e/m2],320,,,A,2
+Specific area coverage [MW_e/km2],6,,,A,1
+Average annual full-load hours [MWh_e/MW_e],4550,,,A,1
+Wind farm size [number of turbines],70,,,A,1
+Water depth [m],30,,,A,
+Distance to shore [km],60,,,A,

@@ -26,3 +26,4 @@ step3/data/
 .cdsapirc*
 step2/data/aap_hourly_*.csv
 step2/outputs/*.csv.gz
+step4/data/

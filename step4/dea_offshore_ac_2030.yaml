@@ -1,0 +1,69 @@
+# DEA Technology Data – offshore wind, transcribed with step4/dea_extract.py
+# Workbook: "Technology Data for power and heat production plants", version 0019 (Aug 2026),
+#   file technology_data_for_el_and_dh_-_0019.xlsx, https://ens.dk/node/3449 (CC BY 4.0).
+#   Chapter 21 datasheets updated 2025-02-03 (Intro sheet, amendment list).
+# Price base: "Cost data is in 2020 EURO" (Intro sheet), real, excl. VAT.
+# Columns are FID years ("Constructed and in operation 3-4 years after investment decision (FID)", note D).
+source:
+  workbook: "DEA Technology Data for el and DH, version 0019, https://ens.dk/node/3449"
+  sheet: "21 Offshore Wind AC Fixed (+ 21 Nearshore Wind AC, 21 Offshore Wind AC Floating, 21 Far shore Wind DC Fixed for site interpolation)"
+  fid_year_column: 2030
+  price_base: "EUR 2020, real, excl. VAT"
+status: final
+
+# '21 Offshore Wind AC Fixed' – representative site: 60 km to shore, 30 m depth, 70 x 20 MW, AC with offshore substation
+ac_fixed:
+  representative_site: {distance_km: 60, depth_m: 30, unit_mw: 20, turbines: 70, rotor_m: 280, hub_m: 170}
+  "2030":                                # central column (no lower/upper given for 2030)
+    nominal_investment_total: 2.3931344873524045
+    project_development: 0.16835206001619485
+    turbines: 0.9306086579232158
+    foundation: 0.4136038479658737
+    array_cables: 0.04208801500404871
+    substation: 0.5736981465136805
+    export_cables: 0.26478375992939096
+    fixed_om_eur_per_mw_yr: 34000
+    variable_om_eur_per_mwh: 3.446698733048947
+    technical_lifetime_yr: 30
+    construction_time_yr: 3.5
+    full_load_hours: 4550
+  "2025":                                # central, FID 2025, 15 MW units, 236 m rotor
+    nominal_investment_total: 2.780229479258605
+    project_development: 0.176522506619594
+    turbines: 1.1915269196822595
+    foundation: 0.529567519858782
+    array_cables: 0.0441306266548985
+    substation: 0.5736981465136805
+    export_cables: 0.26478375992939096
+    fixed_om_eur_per_mw_yr: 44000
+    variable_om_eur_per_mwh: 4.41306266548985
+    technical_lifetime_yr: 30
+    construction_time_yr: 3.5
+    full_load_hours: 4400
+  "2025_band":                           # lower/upper columns, FID 2025
+    nominal_investment_total: [2.502206531332745, 3.0582524271844664]
+    fixed_om_eur_per_mw_yr: [39600, 48400]
+    technical_lifetime_yr: [25, 40]
+    construction_time_yr: [3, 4]
+  uncertainty_note_F: "2025: -10%, 10%, 2050: -35%, 35%"   # applied to investment and O&M rows
+
+# Other AC/DC sheets, 2030 column – used only to interpolate export cable (distance) and foundation (depth)
+site_interpolation:
+  export_cables_vs_distance:            # M EUR2020/MW, configuration with offshore substation (AC)
+    - {sheet: "21 Offshore Wind AC Floating", distance_km: 35, value: 0.176522}
+    - {sheet: "21 Offshore Wind AC Fixed", distance_km: 60, value: 0.26478375992939096}
+  export_cables_check_nearshore:        # no OSS, array-voltage export – not used in the line
+    {sheet: "21 Nearshore Wind AC", distance_km: 15, value: 0.088261}
+  foundation_vs_depth_2030:             # fixed-bottom monopile/jacket, M EUR2020/MW
+    - {sheet: "21 Nearshore Wind AC", depth_m: 15, value: 0.379136}
+    - {sheet: "21 Offshore Wind AC Fixed", depth_m: 30, value: 0.4136038479658737}
+    - {sheet: "21 Far shore Wind DC Fixed", depth_m: 40, value: 0.448070}
+  foundation_vs_depth_2025:
+    - {sheet: "21 Nearshore Wind AC", depth_m: 15, value: 0.485436}
+    - {sheet: "21 Offshore Wind AC Fixed", depth_m: 30, value: 0.529567519858782}
+    - {sheet: "21 Far shore Wind DC Fixed", depth_m: 40, value: 0.573698}
+  substation_note: "AC Fixed (60 km) and AC Floating (35 km) carry the same substation cost (0.5737) -> distance-independent"
+  method_note: >-
+    The DEA chapter text gives its own depth/distance formulas; the chapter PDF could not be read in this
+    session, so the adjustment interpolates between the DEA's own datasheets instead (export cable: line through
+    the 35 km and 60 km AC sheets; foundation: piecewise-linear through 15/30/40 m). Check against chapter 21.
