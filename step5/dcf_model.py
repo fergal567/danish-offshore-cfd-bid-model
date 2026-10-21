@@ -325,7 +325,8 @@ class Params:
     owner_devex: float
     energinet: float
     dev_share: float                  # DEA development share of dea_base
-    export_share: float               # export-cable share of dea_base (tax pool)
+    export_share: float               # share of dea_base in the 7 % infrastructure pool (tax only):
+                                      # cables + offshore substation in base (SKM2025.37.SR, step 7 V1)
     dev_profile: dict
     constr_profile: dict
     devex_profile: dict
@@ -393,11 +394,14 @@ def make_params(inputs: Inputs, site: str, *, capex_case: str = "base", energine
                 opex_case: str = "base", fixed_om_case: str | None = None, var_om_case: str | None = None,
                 decom_case: str = "base", phasing: str = "base", capex_scale: float = 1.0,
                 yield_factor: float = 1.0, internal_wake: float = BASE_INTERNAL_WAKE,
-                availability: float = BASE_AVAILABILITY, life: int = 30, **overrides) -> Params:
+                availability: float = BASE_AVAILABILITY, life: int = 30,
+                tax7_scope: str = "cables_and_substation", **overrides) -> Params:
     """Concrete Params from cost_inputs.yaml cases.
 
     capex_case: low/base/high (YAML) or "col2025" = DEA 2025 column (15 MW units) with base
     contingency rate and base owner's devex (paired sensitivity, Asm).
+    tax7_scope: "cables_and_substation" (base; array + export cables + offshore substation in the
+    7 % pool, SKM2025.37.SR) or "export_only" (the step-5 scope, kept as a sensitivity).
     """
     c = inputs.cost
     s = SITES[site]
@@ -423,7 +427,8 @@ def make_params(inputs: Inputs, site: str, *, capex_case: str = "base", energine
         owner_devex=devex * mw * capex_scale,
         energinet=cx["energinet_connection_mdkk_total"][energinet_case],
         dev_share=c["capex_phasing"]["dea_development_share"][site],
-        export_share=c["tax"]["export_cable_share_of_dea_base"][site],
+        export_share=(c["tax"]["infra_7pct_share_of_dea_base"] if tax7_scope == "cables_and_substation"
+                      else c["tax"]["export_cable_share_of_dea_base"])[site],
         dev_profile={int(k): v for k, v in prof["development"].items()},
         constr_profile={int(k): v for k, v in prof["construction"].items()},
         devex_profile={int(k): v for k, v in c["capex_phasing"]["owner_devex"].items()},
@@ -445,7 +450,7 @@ def make_params(inputs: Inputs, site: str, *, capex_case: str = "base", energine
         life=life,
         tax_rate=c["tax"]["corporate_tax_rate"],
         plant_rate=c["tax"]["pools"]["plant_15pct_db"]["rate"],
-        export_rate=c["tax"]["pools"]["export_cable"]["rate"]["base"],
+        export_rate=c["tax"]["pools"]["infrastructure_7pct"]["rate"]["base"],
         inflation=c["wacc"]["inflation_for_nominal_conversion"],
         wacc_cfd=c["wacc"]["cfd_period"]["base"], wacc_tail=c["wacc"]["merchant_tail"]["base"],
     )
@@ -480,7 +485,7 @@ def capex_schedule(p: Params) -> pd.DataFrame:
         add(y, "development", dev * w)
     for y, w in p.constr_profile.items():
         add(y, "construction", construction * w)
-        add(y, "export_cable", export * w)          # subset of construction (for tax only)
+        add(y, "export_cable", export * w)          # 7 % infrastructure pool, subset of construction (tax only)
     for y, w in p.devex_profile.items():
         add(y, "owner_devex", p.owner_devex * w)
     for y, w in p.energinet_profile.items():

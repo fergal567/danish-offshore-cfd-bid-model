@@ -223,9 +223,9 @@ opex:
     base: 302.9
     high: 392.0
   insurance_dkk_k_per_mw_yr:
-    low: 44.8
-    base: 74.6
-    high: 111.9
+    low: 0.0
+    base: 0.0
+    high: 74.6
   variable_om_dkk_per_mwh:
     low: 26.1
     base: 30.71
@@ -284,17 +284,26 @@ tax:
     plant_15pct_db:
       rate: 0.15
       method: declining balance
-      assets: turbines, foundations, array cables, offshore substation, development, contingency
+      assets: turbines, foundations (incl. transport and installation), development, contingency
       law: Afskrivningsloven §5C stk. 1 nr. 4 (el-production plant >1 MW; wind turbines acquired from 2013), stk.
         4
+    infrastructure_7pct:
+      rate:
+        low: 0.15
+        base: 0.07
+        high: 0.07
+      method: declining balance
+      assets: array cables, export cable, offshore substation
+      law: '§5C stk. 2 nr. 1 (infrastructure for transport of electricity); Skatterådet SKM2025.37.SR (19 Nov 2024),
+        Q5: ''forskellige typer kabler og transformatorstationer mv.'' up to 7 % (step 7, V1). Low case 15 % = treated
+        as production plant'
     export_cable:
       rate:
         low: 0.15
         base: 0.07
         high: 0.07
       method: declining balance
-      law: §5C stk. 2 nr. 1 (infrastructure for transport of electricity) -> 7 % base; 15 % if treated as part of
-        the production plant
+      law: superseded by infrastructure_7pct; kept for the old-scope sensitivity (export cable only at 7 %)
     energinet_contribution:
       rate: 0.2
       method: straight line
@@ -302,6 +311,9 @@ tax:
   export_cable_share_of_dea_base:
     NSM: 0.0549
     HES: 0.0742
+  infra_7pct_share_of_dea_base:
+    NSM: 0.3283
+    HES: 0.3438
   depreciation_start: COD year (2033) for plant/cable; payment year for §43 contribution
   losses:
     base: used immediately via Danish joint taxation (sambeskatning)

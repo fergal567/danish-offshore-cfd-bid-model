@@ -15,5 +15,5 @@
 | HES capex all-in | 18.42 / 22.22 / 27.06 | DKK m/MW |
 | HES capex all-in | 14,645 / 17,665 / 21,512 | DKK m |
 | Fixed O&M | 257.5 / 302.9 / 392.0 | DKK k/MW/yr |
-| Insurance | 44.8 / 74.6 / 111.9 | DKK k/MW/yr |
+| Insurance | 0.0 / 0.0 / 74.6 | DKK k/MW/yr |
 | Variable O&M | 26.10 / 30.71 / 39.31 | DKK/MWh |

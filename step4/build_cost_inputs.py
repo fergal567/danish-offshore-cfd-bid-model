@@ -183,7 +183,10 @@ fom_c = AC["2030"]["fixed_om_eur_per_mw_yr"]
 vom_c = AC["2030"]["variable_om_eur_per_mwh"]
 fom = lbh(fom_c * (1 - BAND_2030), fom_c, AC["2025"]["fixed_om_eur_per_mw_yr"])
 vom = lbh(vom_c * (1 - BAND_2030), vom_c, AC["2025"]["variable_om_eur_per_mwh"])
-INSURANCE_EUR26 = lbh(6000, 10000, 15000)   # EUR 2026 /MW/yr, operational insurance (Asm)
+# DEA Technology Data guideline, 'O&M costs' (pp. 27–28): fixed O&M already includes insurance
+# (and network/system charges). Base 0 to avoid double counting; high = the old EUR 10k/MW/yr base,
+# in case chapter 21 differs from the guideline (step 7, V6; Ext guideline, Asm high case).
+INSURANCE_EUR26 = lbh(0, 0, 10000)          # EUR 2026 /MW/yr, operational insurance on top of DEA O&M
 
 opex = {
     "fixed_om_dkk_k_per_mw_yr": scale(fom, DKK26_PER_EUR20 / 1000, 1),
@@ -227,18 +230,28 @@ tax = {
     "corporate_tax_rate": 0.22,
     "pools": {
         "plant_15pct_db": {"rate": 0.15, "method": "declining balance",
-                           "assets": "turbines, foundations, array cables, offshore substation, "
+                           "assets": "turbines, foundations (incl. transport and installation), "
                                      "development, contingency",
                            "law": "Afskrivningsloven §5C stk. 1 nr. 4 (el-production plant >1 MW; "
                                   "wind turbines acquired from 2013), stk. 4"},
+        "infrastructure_7pct": {"rate": lbh(0.15, 0.07, 0.07), "method": "declining balance",
+                                "assets": "array cables, export cable, offshore substation",
+                                "law": "§5C stk. 2 nr. 1 (infrastructure for transport of electricity); "
+                                       "Skatterådet SKM2025.37.SR (19 Nov 2024), Q5: 'forskellige typer kabler og "
+                                       "transformatorstationer mv.' up to 7 % (step 7, V1). Low case 15 % = "
+                                       "treated as production plant"},
         "export_cable": {"rate": lbh(0.15, 0.07, 0.07), "method": "declining balance",
-                         "law": "§5C stk. 2 nr. 1 (infrastructure for transport of electricity) "
-                                "-> 7 % base; 15 % if treated as part of the production plant"},
+                         "law": "superseded by infrastructure_7pct; kept for the old-scope sensitivity "
+                                "(export cable only at 7 %)"},
         "energinet_contribution": {"rate": 0.20, "method": "straight line",
                                    "law": "§43 (tilslutningsafgifter), from when the fee is due"},
     },
     "export_cable_share_of_dea_base": {s: round(SITE_DEA[s]["2030"]["export_cables"] / SITE_DEA[s]["2030"]["total"], 4)
                                        for s in SITES},
+    # 7 % pool per SKM2025.37.SR: array cables + export cable + offshore substation (step 7, V1)
+    "infra_7pct_share_of_dea_base": {s: round(sum(SITE_DEA[s]["2030"][k] for k in
+                                                  ("array_cables", "substation", "export_cables"))
+                                              / SITE_DEA[s]["2030"]["total"], 4) for s in SITES},
     "depreciation_start": "COD year (2033) for plant/cable; payment year for §43 contribution",
     "losses": {"base": "used immediately via Danish joint taxation (sambeskatning)",
                "sensitivity": "standalone: SEL §12 – full offset up to DKK 20.829m (2025), "

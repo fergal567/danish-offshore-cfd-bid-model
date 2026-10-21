@@ -37,7 +37,7 @@ def test_connection_contributions():
 
 def test_ranges_ordered():
     bad = [p for p, d in _lbh_dicts(Y) if not d["low"] <= d["base"] <= d["high"]
-           and "export_cable" not in p]          # export-cable rate: 'low' case = faster 15 % (tax-favourable)
+           and "export_cable" not in p and "infrastructure_7pct" not in p]          # export-cable rate: 'low' case = faster 15 % (tax-favourable)
     assert not bad, bad
 
 
