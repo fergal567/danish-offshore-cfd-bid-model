@@ -5,7 +5,7 @@ Part of Project 1 (reverse-engineering the Danish offshore wind CfD bids: Nords�
 | File | What it does |
 |---|---|
 | `eds_price_download.py` | Downloads DK1/DK2 day-ahead prices (Energinet Energi Data Service) for any year range and saves hourly UTC series. Stitches `Elspotprices` (hourly, to 30 Sep 2025) and `DayAheadPrices` (15-min, from 1 Oct 2025). Optional `--wind` adds metered offshore wind per area as a placeholder AAP profile. |
-| `price_analysis.ipynb` | Baseload prices, negative-price frequency and the AAP-weighted monthly reference price, by month and year. `YIELD_SOURCE = "proxy"` now; `"era5"` once step 2 exports hourly AAP. |
+| `price_analysis.ipynb` | Baseload prices, negative-price frequency and the AAP-weighted monthly reference price, by month and year. `YIELD_SOURCE = "era5"` (default) weights prices by the step-2 site AAP; `"proxy"` uses metered offshore wind per area instead, and section 5b compares the two. |
 | `price_scenarios_method.md` | Method and sources for 2033–2052 price scenarios (DEA AF25), with a net-cap screen. |
 | `tests/` | Offline tests of the download logic (mocked API). |
 
@@ -26,3 +26,4 @@ For 2016–2025 with `--wind` the download makes 21 requests (one per dataset an
 - Missing hours are left as NaN and reported, never filled. DKK prices missing in the source are filled from EUR × 7.46 and flagged (`dkk_from_eur`).
 
 Data: Energinet, Energi Data Service (CC BY 4.0).
+
