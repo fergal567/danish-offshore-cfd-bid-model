@@ -1,0 +1,15 @@
+site,scenario,avg RP 2033–52,NPV @ awarded (DKK m),ΔNPV vs S1,break-even strike,cap exhausted @ awarded,cap used @ awarded,cap exhausted @ break-even,subsidy lost to cap (DKK m)
+NSM,S1 AF25 central,403.76,-1471.84,0.00,546.62,no,0.63,no,0.00
+NSM,S2 weather low,355.41,-1657.93,-186.09,649.29,no,0.91,2043-08,0.00
+NSM,S2 weather high,443.24,-1296.53,175.32,541.55,no,0.39,no,0.00
+NSM,S3 low gas (−15 %),343.19,-1882.60,-410.76,779.20,no,0.98,2040-07,0.00
+NSM,"S4 low PtX (−20 %, CF −0.10)",285.08,-3519.12,-2047.27,,2047-09,1.00,–,5156.68
+NSM,S5 historical CF,422.55,-1264.00,207.84,540.61,no,0.51,no,0.00
+NSM,S1-B′ DEA fleet ratio,358.09,-2047.67,-575.83,683.45,no,0.89,2043-04,0.00
+HES,S1 AF25 central,434.86,-844.94,0.00,574.87,no,0.36,no,0.00
+HES,S2 weather low,383.56,-1053.56,-208.62,582.98,no,0.52,no,0.00
+HES,S2 weather high,480.92,-685.01,159.93,568.65,no,0.21,no,0.00
+HES,S3 low gas (−15 %),369.63,-1171.67,-326.73,587.58,no,0.56,no,0.00
+HES,"S4 low PtX (−20 %, CF −0.10)",308.05,-1482.31,-637.37,599.66,no,0.75,no,0.00
+HES,S5 historical CF,438.90,-777.67,67.28,572.25,no,0.34,no,0.00
+HES,S1-B′ DEA fleet ratio,326.00,-1665.34,-820.40,606.78,no,0.69,no,0.00

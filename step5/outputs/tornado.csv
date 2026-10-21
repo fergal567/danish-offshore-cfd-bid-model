@@ -1,0 +1,15 @@
+site,input,low,high,base,note,swing
+NSM,Capex (step-4 low / high),470.9,1168.0,546.6,,697.1
+NSM,WACC (4.0/6.0 % · 6.5/8.5 %),489.4,882.7,546.6,,393.3
+NSM,Yield (P10 / P90),506.2,615.3,546.6,,109.0
+NSM,Opex (all lines low / high),510.8,728.1,546.6,,217.4
+NSM,Tail value (life 35 / 25 yrs),526.4,587.2,546.6,,60.7
+NSM,Availability (96 % / 93.5 %),546.6,561.6,546.6,,15.0
+NSM,Price scenario (S1–S5),540.6,inf,546.6,S4,inf
+HES,Capex (step-4 low / high),492.9,670.3,574.9,,177.4
+HES,WACC (4.0/6.0 % · 6.5/8.5 %),514.1,671.1,574.9,,157.1
+HES,Yield (P10 / P90),531.6,625.4,574.9,,93.8
+HES,Opex (all lines low / high),537.5,636.4,574.9,,98.9
+HES,Tail value (life 35 / 25 yrs),553.0,605.5,574.9,,52.5
+HES,Availability (96 % / 93.5 %),574.9,590.7,574.9,,15.9
+HES,Price scenario (S1–S5),568.6,599.7,574.9,,31.0
