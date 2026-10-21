@@ -1,26 +1,32 @@
 # What do Vattenfall's Danish offshore wind CfD bids imply?
 
-**Question:** Vattenfall won Denmark's 2026 offshore wind tenders at **DKK 504/MWh (Nordsøen Midt, 1 GW, DK1)** and **DKK 542/MWh (Hesselø, 0.8 GW, DK2)**. What capex, cost of capital and yield do those strikes imply?
+In August 2026 Vattenfall won Denmark's two offshore wind tenders: Nordsøen Midt (1 GW, West Denmark) at DKK 504/MWh and Hesselø (0.8 GW, East Denmark) at DKK 542/MWh. This project asks what those prices imply about build cost, required return and wind output.
 
-This repo rebuilds both bids from public data: the tender's contract terms, an hourly yield model, Danish power prices and DEA scenarios, DEA cost data, and a monthly DCF with the CfD's net payment cap. It then solves for the inputs that make NPV = 0 at the awarded strikes.
+I rebuilt both bids from public data – the tender's contract terms, an hourly yield model, Danish power prices and the DEA's price outlook and cost data – in a monthly cash-flow model, then solved for the inputs that make the project break even at the awarded prices. Figures are in real 2026 DKK, valued at the bid date (20 May 2026). The step memos tag each input by source: tender documents, a named outside source, or my own assumption.
 
-All figures are in **real 2026 DKK**, with NPV at the bid date (20 May 2026). Every input is tagged **Doc** (tender documents), **Ext** (named outside source) or **Asm** (my assumption) in the step memos.
+## Why I built this
+
+Denmark's 2024 offshore wind tender got zero bids, and that made me question whether the wind market was somewhere I really wanted to build a career. When Vattenfall won both sites in 2026, I wanted to find out what it actually takes to evaluate an investment that size: what data goes in, how the numbers are worked through, and what drives a company to bid the price it does. I also used it to test whether I'd enjoy analyst or consultancy work. The finding that surprised me most was how much the bids seem to depend on next-generation 20 MW turbines.
+
+With more time I'd run the full ERA5 dataset from Copernicus to check my wind data against it (the queue made even one month take hours), and look at what else could explain the bid: how the projects are financed, whether supply or offtake agreements sit behind them, and what strategic value Vattenfall sees in building a strong position in Danish offshore wind.
 
 ## Findings
 
-- **The awarded strikes are 3–6 % below my base-case break-even.** Nordsøen Midt (NSM) breaks even at **DKK 533/MWh** (awarded 504) and Hesselø at **DKK 559/MWh** (awarded 542). At the awarded strikes NPV is −DKK 1.0bn and −0.45bn, about 2.5–4 % of capex.
-- **Any one of these closes the gap:** an implied real after-tax return of **4.5 % (NSM) / 4.7 % (Hesselø)** instead of my 5.0 % base; or all-in capex of **DKK 20.9 / 21.4m/MW** (≈ €2.8–2.9m/MW, 4–6 % below my estimate from DEA data); or a P10 rather than P50 yield.
-- **That return is thin against Vattenfall's own cost of capital.** Vattenfall's 2025 annual report gives a 5.7–7.4 % after-tax discount rate for its wind business, about 3.6–5.3 % real. The bids imply roughly 1 pp above the low end, below the 150–350 bp spreads RWE and Ørsted target.
-- **The bids look like a bet on 20 MW-class turbines.** With the DEA's FID-2025 costs (15 MW units) the implied return is only 2.8–3.1 %, below Vattenfall's own discount rate. With FID-2030 costs (20 MW units) and the matching yield it is 4.8–5.0 %.
-- **The net cap on state payments makes NSM much riskier than Hesselø.** NSM's cap covers on average only **DKK 167/MWh** of support over 20 years, against **313** at Hesselø. In a low power-to-X price scenario NSM's cap runs out in **July 2047**, DKK 5.5bn of payments are never made, and no strike gives NPV = 0. Hesselø never uses more than 76 % of its cap. This may help explain why NSM drew only two bids against Hesselø's five (interpretation).
+In my base case the awarded prices are 3–6 % below break-even. Nordsøen Midt needs DKK 533/MWh against the 504 awarded, and Hesselø 559 against 542.
 
-Full write-up: **[step5/bid_calibration_memo.md](step5/bid_calibration_memo.md)** (two pages) · One-page summary: **[summary/project1_summary.pdf](summary/project1_summary.pdf)** · Source checks: **[step7/verification_notes.md](step7/verification_notes.md)**
+The gap closes if Vattenfall accepts a real after-tax return of about 4.5–4.7 % instead of my 5.0 %, builds for 4–6 % less than my estimate from DEA cost data (DKK 20.9–21.4m/MW instead of 22.3m), or gets a windier outcome than the median. A 4.5 % return is only about one percentage point above the 3.6–5.3 % real discount rate Vattenfall discloses for its wind business, which is thin compared with the 150–350 bp margins RWE and Ørsted say they target.
+
+With the DEA's costs for today's 15 MW turbines, the implied return drops to 2.8–3.1 %, below Vattenfall's own rate. With costs and output for 20 MW turbines it rises to 4.8–5.0 %. My reading is that the bids rely on next-generation turbines.
+
+The state's cap on CfD payments is the bigger difference between the two sites. Spread over 20 years it covers an average top-up of DKK 167/MWh at Nordsøen Midt but 313 at Hesselø. In a low power-to-X price scenario Nordsøen Midt's cap runs out in July 2047 and DKK 5.5bn of payments are never made, while Hesselø never uses more than 76 % of its cap. That may be part of why Nordsøen Midt drew two bids and Hesselø five, though that is my interpretation.
+
+More detail: the [two-page memo](step5/bid_calibration_memo.md), the [one-page summary](summary/project1_summary.pdf) and the [source checks](step7/verification_notes.md).
 
 ![Break-even strike sensitivity, Nordsøen Midt and Hesselø](step5/outputs/fig_tornado.png)
 
 *Break-even strike, one input at a time. Capex and the discount rate dominate; at NSM their high cases push the break-even into the net cap. Yield, tail value and availability are second-order.*
 
-![CfD WACC giving NPV = 0 at the awarded strike, by capex and yield](step5/outputs/fig_wacc_vs_capex.png)
+![CfD-period discount rate giving NPV = 0 at the awarded strike, by capex and yield](step5/outputs/fig_wacc_vs_capex.png)
 
 *Capex and CfD-period discount-rate combinations that give NPV = 0 at the awarded strikes, for P90 / P50 / P10 yield and a 13 % wake case. The base inputs (◆) sit above the P50 line, so NPV is negative at the base case.*
 
@@ -98,7 +104,6 @@ danish-offshore-cfd-bid-model/
 ├── LICENSE
 ├── requirements.txt
 ├── contract_assumptions.md        # Step 1: CfD terms, tagged Doc / Ext / Asm
-├── progress-notes.md              # Working log: results and decisions by step
 ├── summary/                       # One-page PDF (LaTeX), figure and LinkedIn carousel scripts
 ├── step2/                         # Yield model
 │   ├── README.md
@@ -113,7 +118,7 @@ danish-offshore-cfd-bid-model/
 │   ├── price_analysis.ipynb
 │   ├── price_scenarios_method.md
 │   └── tests/
-├── step4/                         # Cost, tax and WACC inputs
+├── step4/                         # Cost, tax and discount-rate inputs
 │   ├── README.md
 │   ├── cost_assumptions.md        # Memo
 │   ├── dea_extract.py             # DEA workbook → dea_offshore_ac_2030.yaml
@@ -137,17 +142,17 @@ danish-offshore-cfd-bid-model/
 
 ## Limitations and open items
 
-- **Contract terms are a proxy.** The tender documents in hand are for Nordsøen Syd. NSM's and Hesselø's own Annex F and Appendix 3 were not available, so guarantees, liability caps and CfD-start wording follow Nordsøen Syd. The net cap amounts come from the DEA guide (NSM) and the EU contract notice (Hesselø).
-- **The 1995 climate year is reconstructed.** AF25 uses weather years 1995, 2008 and 2009. 1995 site output is rebuilt from ERA5 wind by learning step 2's wind → AAP mapping (held-out R² 0.998 NSM, 0.991 Hesselø), not run through the step-2 notebook.
-- **There is a gap against the DEA's own capture factors.** Pairing AF25 hourly prices with site yield gives offshore capture factors of 0.84–0.91 within each month. The DEA's published fleet-weighted ratios are much lower (DK1: 0.57 / 0.95 / 0.76 in 2030 / 2040 / 2050). I keep my pairing as the central case and run the DEA ratio as a downside, where NSM's break-even rises to DKK 683/MWh. The DEA's method is still to be checked.
-- **Tax treatment follows one binding ruling.** Skatterådet's SKM2025.37.SR (an anonymised Danish offshore CfD project) puts cables and transformer stations at 7 % and confirms §43 for the Energinet contribution. It does not name each asset, so applying it to the array cables, export cable and offshore substation is my reading.
-- **Cost adjustments are approximations.** Capex is site-adjusted by interpolating between the DEA's own datasheets, not the chapter 21 formulas. Hesselø carries no scale or nature-inclusive design premium, and its Energinet area classification is unconfirmed (connection contribution DKK 157–532m). Insurance is taken as included in DEA fixed O&M, per the DEA's general guideline.
-- **Vattenfall's discount rate is a range for its whole wind business.** Note 27 covers on- and offshore wind and does not say nominal or real; I read it as nominal. No offshore-only rate is disclosed.
-- **Overplanting is not modelled in the base case.** The DEA's AF25 assumes it at both sites; it earns merchant revenue only and would be a further lever behind the bids.
-- **This is an outside-in reconstruction.** It uses only public information, is not affiliated with Vattenfall, the DEA or Energinet, and does not claim to reproduce Vattenfall's actual inputs.
+- The contract terms come from the Nordsøen Syd tender documents, used as a proxy because Nordsøen Midt's and Hesselø's own Annex F and Appendix 3 weren't available. The cap amounts come from the DEA guide (Nordsøen Midt) and the EU contract notice (Hesselø).
+- The DEA's price outlook uses weather years 1995, 2008 and 2009. Site output for 1995 is rebuilt from ERA5 wind with the step-2 wind-to-output relationship (held-out R² 0.998 and 0.991), not run through the step-2 notebook.
+- My site capture factors (0.84–0.91 within each month) are well above the DEA's published fleet ratios (0.57 / 0.95 / 0.76 for DK1 in 2030 / 2040 / 2050), and the DEA doesn't document how it builds them. I run the DEA ratio as a downside, which lifts Nordsøen Midt's break-even to DKK 606/MWh.
+- Tax pools follow one binding ruling (SKM2025.37.SR), which puts cables and transformer stations at 7 % without naming each asset. Applying it to array cables, export cable and offshore substation is my reading.
+- Capex is adjusted to each site by interpolating between DEA datasheets, not with the formulas in the DEA's chapter text. Hesselø has no premium for nature-inclusive design, and its grid-connection charge depends on an area classification I couldn't confirm (DKK 157–532m). Insurance is taken as part of DEA fixed O&M, per the DEA's general guideline.
+- Vattenfall's disclosed discount rate covers its whole wind business, on- and offshore, and doesn't say nominal or real. I read it as nominal.
+- Overplanting isn't in the base case. The DEA's outlook assumes it at both sites, so it is another possible lever behind the bids.
+- This is an outside-in reconstruction from public information. It isn't affiliated with Vattenfall, the DEA or Energinet and doesn't claim to match Vattenfall's own inputs.
 
 ## About
 
-Fergal Israel, MSc Wind Energy student at DTU (2026–2028), BEng Mechanical Engineering (Swansea University). Interested in the commercial and advisory side of offshore wind: site selection, feasibility and project development.
+Fergal Israel. I'm an MSc Wind Energy student at DTU (2026–2028) with a BEng in Mechanical Engineering from Swansea, interested in the commercial side of offshore wind. This is an independent project, not part of my coursework.
 
 Code is released under the [MIT licence](LICENSE). Data and values from third parties keep their own licences, listed above.

@@ -14,3 +14,7 @@ pytest
 xarray
 netCDF4
 cdsapi>=0.7.4
+
+# Only for summary/make_carousel.py (locator map; ships the coastline data)
+basemap
+basemap-data-hires

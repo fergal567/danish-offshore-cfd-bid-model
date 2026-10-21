@@ -48,3 +48,4 @@ step4/data/
 *.synctex.gz
 summary/carousel_p*.png
 !summary/project1_summary.pdf
+progress-notes.md
