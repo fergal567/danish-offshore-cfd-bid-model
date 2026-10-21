@@ -6,9 +6,27 @@
 |---|---|---|---|
 | 1. Contract terms | Done (20 Oct 2026) | `contract_assumptions.md` | Based on Nordsøen Syd documents; NSM/Hesselø own Annex F and Appendix 1 still missing (rows marked ⚠ site) |
 | 2. Yield model | ERA5 download running since 20 Oct 2026 (Windows laptop, Python 3.13 venv) | `step2/era5_download.py`, `step2/yield_model.ipynb`, `step2/data/IEA_Reference_15MW_240.csv` | Yearly requests exceed CDS cost limits → using `--chunk month`. Three windows: HES 2025 (test), NSM 2006–2025, HES 2006–2024. CDS queue very busy (~2,500 queued); expect 1–2+ days. When done: `python era5_download.py --start 2006 --end 2025 --postprocess-only`, then upload `data/era5_NSM_2006_2025.csv` and `data/era5_HES_2006_2025.csv` and run the notebook. Notebook so far tested on synthetic data only |
-| 3. Prices & reference price | Code done (21 Oct 2026); real download not yet run | `step3/eds_price_download.py`, `step3/price_analysis.ipynb`, `step3/price_scenarios_method.md`, `step3/tests/` | Run `python eds_price_download.py --start 2016 --end 2025 --wind`, then the notebook (YIELD_SOURCE="proxy"). Tested offline on synthetic data only (EDS API blocked from Claude's workspace). Elspotprices to 30 Sep 2025, DayAheadPrices (15-min) from 1 Oct 2025; RP uses MTU-level zero floor (App 3 §2.6.3). Switch to YIELD_SOURCE="era5" once step 2 exports `aap_hourly_<SITE>.csv` (time_utc, aap_mwh). 2033–2052 scenarios: method B chosen (AF25 hourly × ERA5 same weather year), not yet run |
+| 3. Prices & reference price | Done with wind proxy (21 Oct 2026); ERA5 rerun pending step 2 | `step3/eds_price_download.py`, `step3/price_analysis.ipynb`, `step3/price_scenarios_method.md`, `step3/tests/` (9 tests) | Real 2016–2025 DK1/DK2 data: 0 missing hours. Fixed New-Year duplicate rows (wind proxy was double-counted). Results under 'Step 3 results'. Switch to YIELD_SOURCE="era5" once step 2 exports `aap_hourly_<SITE>.csv` (time_utc, aap_mwh). 2033–2052 scenarios: method B chosen (AF25 hourly × ERA5 same weather year), run in step 5 |
 | 4. Capex / opex | Not started | – | DEA Technology Catalogue + connection contribution (G3–G5) |
 | 5. DCF & bid calibration | Not started | – | Solve for capex/WACC combinations giving NPV = 0 at 504 / 542 |
+
+### Step 3 results (wind proxy, nominal DKK; 21 Oct 2026)
+| Year | DK1 baseload | NSM RP | NSM RP/baseload | DK2 baseload | HES RP | HES RP/baseload | DK1 / DK2 neg. hours |
+|---|---|---|---|---|---|---|---|
+| 2016 | 199 | 185 | 0.93 | 219 | 201 | 0.92 | 62 / 49 |
+| 2019 | 287 | 268 | 0.93 | 297 | 277 | 0.93 | 132 / 95 |
+| 2020 | 186 | 149 | 0.80 | 212 | 165 | 0.78 | 192 / 89 |
+| 2022 | 1,629 | 1,304 | 0.80 | 1,563 | 1,096 | 0.70 | 38 / 5 |
+| 2023 | 647 | 544 | 0.84 | 605 | 465 | 0.77 | 281 / 231 |
+| 2024 | 527 | 435 | 0.82 | 529 | 419 | 0.79 | 375 / 275 |
+| 2025 | 605 | 545 | 0.90 | 616 | 537 | 0.87 | 441 / 265 |
+
+- Observed RP/baseload 2016–2025: NSM proxy 0.80–0.93, HES proxy 0.70–0.93. DEA AF25 assumes offshore-weighted/spot of 0.57 (DK1) and 0.46 (DK2) in 2030 — far below anything observed — rising to 0.95/0.88 in 2040. The DEA path is a structural break from history; use S5 (historical replay) as a real alternative, not just a check.
+- Negative-price floor matters little for RP: only 1–4.5 % of AAP falls in negative hours; RP is 1–4 DKK/MWh above the unfloored capture price.
+- MTU-level vs hour-level floor (Oct–Dec 2025): difference ≈ 0.0004 DKK/MWh — immaterial so far.
+- DK1 2023 low of −3,277 DKK/MWh (≈ −440 EUR) confirmed in the data at 2 July 2023, 14:00–15:00 Danish time (12:00 UTC) — the record north-west European negative-price Sunday.
+- 2025 capture factors jump (NSM 0.90, HES 0.87) while proxy AAP is the lowest of the decade (low-wind year → less cannibalisation?). Check with ERA5.
+- Proxy caveats: DK2 proxy is Baltic farms, not Kattegat; metered output patched in negative hours.
 
 ### Decisions so far
 - Turbine: IEA 15 MW reference, hub 150 m. NSM 67 turbines (1,005 MW), Hesselø 53 (795 MW).

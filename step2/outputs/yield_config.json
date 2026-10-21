@@ -1,0 +1,87 @@
+{
+  "turbine": {
+    "name": "IEA 15 MW RWT",
+    "rated_MW": 15.0,
+    "rotor_m": 240,
+    "hub_m": 150,
+    "cut_out_ms": 25.0,
+    "curve_file": "IEA_Reference_15MW_240.csv"
+  },
+  "sites": {
+    "NSM": {
+      "name": "Nords\u00f8en Midt",
+      "zone": "DK1",
+      "lat": 56.0,
+      "lon": 7.55,
+      "n_turbines": 67,
+      "alpha": 0.07,
+      "target_mean_150": 10.44,
+      "weibull_A_150": 11.76,
+      "weibull_k_150": 2.25,
+      "wake_internal": 0.1,
+      "wake_external": 0.01,
+      "mincap_MW": 1005.0,
+      "calibration_factor_mean": 1.0226117053853259
+    },
+    "HES": {
+      "name": "Hessel\u00f8",
+      "zone": "DK2",
+      "lat": 56.352,
+      "lon": 11.698,
+      "n_turbines": 53,
+      "alpha": 0.09,
+      "target_mean_150": 9.63,
+      "weibull_A_150": 10.99,
+      "weibull_k_150": 2.22,
+      "wake_internal": 0.1,
+      "wake_external": 0.003,
+      "mincap_MW": 795.0,
+      "calibration_factor_mean": 1.0583236334471895
+    }
+  },
+  "losses": {
+    "other_performance": 0.02,
+    "unscheduled_unavail": 0.03,
+    "scheduled_unavail": 0.01,
+    "electrical": 0.025
+  },
+  "options": {
+    "shear_method": "site_alpha",
+    "calibrate": "weibull_qm",
+    "density_correction": false,
+    "wake_shape": "ct_weighted",
+    "hour_convention": "hour-beginning UTC; energy = trapezoid of ERA5 top-of-hour values"
+  },
+  "dea_check": {
+    "NSM_GWh_per_yr_per_GW": 4479,
+    "NSM_monthly_GWh": [
+      473,
+      424,
+      437,
+      290,
+      321,
+      399,
+      323,
+      389,
+      495,
+      330,
+      233,
+      366
+    ],
+    "NSS_monthly_GWh": [
+      537,
+      430,
+      454,
+      291,
+      270,
+      277,
+      267,
+      323,
+      342,
+      461,
+      463,
+      369
+    ],
+    "source": "DEA Step-by-Step Guide Table 1.5 (NSM); Appendix 3 Table 1 (NSS)"
+  }
+}
