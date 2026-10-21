@@ -6,7 +6,7 @@
 |---|---|---|---|
 | 1. Contract terms | Done (20 Oct 2026) | `contract_assumptions.md` | Based on Nordsøen Syd documents; NSM/Hesselø own Annex F and Appendix 1 still missing (rows marked ⚠ site) |
 | 2. Yield model | Done (21 Oct 2026); committed to GitHub | `step2/era5_openmeteo.py` (used), `step2/era5_download.py` (CDS fallback), `step2/yield_model.ipynb`, `step2/data/IEA_Reference_15MW_240.csv`; exports `step2/data/aap_hourly_<SITE>.csv` (time_utc hour-beginning, aap_mwh, metered_mwh) | ERA5 2006–2025 + 1995 via Open-Meteo (CDS queue stalled). Calibration = quantile mapping onto Energinet Weibull. Results under 'Step 2 results'. Validation vs CDS passed (hourly r 0.998). Base losses kept (10 % internal wake); 12–13 % wake tested as a step-5 sensitivity instead of forcing the DEA match |
-| 3. Prices & reference price | Done with wind proxy (21 Oct 2026); **next: rerun with YIELD_SOURCE="era5"** (ERA5 hand-over files now exist locally) | `step3/eds_price_download.py`, `step3/price_analysis.ipynb`, `step3/price_scenarios_method.md`, `step3/tests/` (9 tests) | Real 2016–2025 DK1/DK2 data: 0 missing hours. Fixed New-Year duplicate rows (wind proxy was double-counted). Results under 'Step 3 results'. Switch to YIELD_SOURCE="era5" once step 2 exports `aap_hourly_<SITE>.csv` (time_utc, aap_mwh). 2033–2052 scenarios: method B chosen (AF25 hourly × ERA5 same weather year), run in step 5 |
+| 3. Prices & reference price | **Done (21 Oct 2026)** – ERA5 site yield run | `step3/eds_price_download.py`, `step3/price_analysis.ipynb` (YIELD_SOURCE="era5" default; section 5b compares with proxy), `step3/price_scenarios_method.md`, `step3/tests/` (9 tests); outputs `step3/data/outputs/reference_price_*_era5.csv` | Real 2016–2025 DK1/DK2 data, 0 missing hours. Results under 'Step 3 results'. 2033–2052 scenarios: method B (AF25 hourly × ERA5 same weather year incl. 1995), run in step 5 |
 | 4. Capex / opex / tax / WACC | **Done (21 Oct 2026)** | `step4/cost_assumptions.md` (memo), `step4/cost_inputs.yaml` (step-5 input, generated), `step4/build_cost_inputs.py`, `step4/dea_extract.py`, `step4/dea_offshore_ac_2030.yaml` (DEA values), `step4/outputs/dea_*.csv` (DEA sheet extracts, CC BY 4.0), `step4/outputs/cost_table.md`, `step4/tests/` (9 tests) | DEA v0019 "21 Offshore Wind AC Fixed", 2030 column, site-adjusted by interpolating between DEA's own sheets. Price base real 2026 DKK (NPI May 2026). Results under 'Step 4 results' |
 | 5. DCF & bid calibration | Not started | – | Solve for capex/WACC combinations giving NPV = 0 at 504 / 542. Real post-tax WACC on real (NPI-indexed) cash flows; higher rate for the merchant tail. Read `step4/cost_inputs.yaml` |
 
@@ -68,23 +68,25 @@ Key points:
 - Vattenfall reports 93.5 % offshore fleet availability in 2025 (92.0 % in 2024) – lower than our 96 % assumption (3 % unscheduled + 1 % scheduled); consider in the step-5 sensitivity.
 - Not found / not sourced: DEA 2030 datasheet values, insurance cost (embedded in fixed O&M), capex phasing, any Vattenfall statement on NSM/Hesselø capex or FID date.
 
-### Step 3 results (wind proxy, nominal DKK; 21 Oct 2026)
+### Step 3 results (ERA5 site yield, nominal DKK; 21 Oct 2026)
 | Year | DK1 baseload | NSM RP | NSM RP/baseload | DK2 baseload | HES RP | HES RP/baseload | DK1 / DK2 neg. hours |
 |---|---|---|---|---|---|---|---|
-| 2016 | 199 | 185 | 0.93 | 219 | 201 | 0.92 | 62 / 49 |
-| 2019 | 287 | 268 | 0.93 | 297 | 277 | 0.93 | 132 / 95 |
-| 2020 | 186 | 149 | 0.80 | 212 | 165 | 0.78 | 192 / 89 |
-| 2022 | 1,629 | 1,304 | 0.80 | 1,563 | 1,096 | 0.70 | 38 / 5 |
-| 2023 | 647 | 544 | 0.84 | 605 | 465 | 0.77 | 281 / 231 |
-| 2024 | 527 | 435 | 0.82 | 529 | 419 | 0.79 | 375 / 275 |
-| 2025 | 605 | 545 | 0.90 | 616 | 537 | 0.87 | 441 / 265 |
+| 2016 | 199 | 186 | 0.94 | 219 | 210 | 0.96 | 62 / 49 |
+| 2019 | 287 | 273 | 0.95 | 297 | 284 | 0.95 | 132 / 95 |
+| 2020 | 186 | 152 | 0.82 | 212 | 180 | 0.85 | 192 / 89 |
+| 2021 | 655 | 593 | 0.91 | 654 | 569 | 0.87 | 87 / 24 |
+| 2022 | 1,629 | 1,341 | 0.82 | 1,563 | 1,172 | 0.75 | 38 / 5 |
+| 2023 | 647 | 555 | 0.86 | 605 | 493 | 0.81 | 281 / 231 |
+| 2024 | 527 | 436 | 0.83 | 529 | 430 | 0.81 | 375 / 275 |
+| 2025 | 605 | 531 | 0.88 | 616 | 535 | 0.87 | 441 / 265 |
 
-- Observed RP/baseload 2016–2025: NSM proxy 0.80–0.93, HES proxy 0.70–0.93. DEA AF25 assumes offshore-weighted/spot of 0.57 (DK1) and 0.46 (DK2) in 2030 — far below anything observed — rising to 0.95/0.88 in 2040. The DEA path is a structural break from history; use S5 (historical replay) as a real alternative, not just a check.
-- Negative-price floor matters little for RP: only 1–4.5 % of AAP falls in negative hours; RP is 1–4 DKK/MWh above the unfloored capture price.
-- MTU-level vs hour-level floor (Oct–Dec 2025): difference ≈ 0.0004 DKK/MWh — immaterial so far.
-- DK1 2023 low of −3,277 DKK/MWh (≈ −440 EUR) confirmed in the data at 2 July 2023, 14:00–15:00 Danish time (12:00 UTC) — the record north-west European negative-price Sunday.
-- 2025 capture factors jump (NSM 0.90, HES 0.87) while proxy AAP is the lowest of the decade (low-wind year → less cannibalisation?). Check with ERA5.
-- Proxy caveats: DK2 proxy is Baltic farms, not Kattegat; metered output patched in negative hours.
+- Mean RP/baseload 2016–2025: **NSM 0.885, HES 0.875**; recent years 2023–25: **NSM 0.854, HES 0.833**. Range NSM 0.82–0.95, HES 0.75–0.96.
+- ERA5 vs proxy: site yield gives a slightly higher RP than the fleet proxy (mean +6 DKK/MWh NSM, +17 HES; largest in 2022: +36 / +76). Hesselø's Kattegat wind is less correlated with the (mostly Baltic) DK2 fleet than the proxy implied, so less cannibalisation. Proxy was a reasonable placeholder for NSM, conservative for HES.
+- **2025 question answered:** ERA5 AAP CF in 2025 was near average (NSM 53.5 %, HES 49.9 %) and yearly wind level is uncorrelated with capture factor (r −0.02 NSM, +0.22 HES). 2025's higher capture factor is a market/price effect (e.g. 15-min MTU from Oct, more flexibility, gas-driven price shape), not a low-wind effect.
+- Negative-price exposure rising: share of AAP in negative-price hours NSM 1.0 % (2016–18) → 4.6 / 5.2 / 5.5 % (2023/24/25); HES up to 3.9–4.2 %. RP floor adds only 1–4 DKK/MWh, but metered sales in those hours earn nothing (or are curtailed) – relevant to the merchant tail.
+- DEA AF25 offshore-weighted/spot (0.57 DK1, 0.46 DK2 in 2030) is far below every observed year (lowest observed 0.82 / 0.75). Keep S5 (historical replay, ≈0.85 / 0.83) as a main alternative to the DEA path in step 5.
+- MTU-level vs hour-level floor since Oct 2025: immaterial (<0.001 DKK/MWh).
+- DK1 2023 low −3,277 DKK/MWh confirmed at 2 July 2023, 14:00–15:00 Danish time.
 
 ### Decisions so far
 - Turbine: IEA 15 MW reference, hub 150 m. NSM 67 turbines (1,005 MW), Hesselø 53 (795 MW).
@@ -96,11 +98,10 @@ Key points:
 - Step 4: model price base = real 2026 DKK deflated with NPI May 2026 (= strike base). DEA 2030 column as base capex/O&M, 2025 column as high case. Export cable taxed at 7 % in base. Tax losses used via group relief in base.
 
 ### Next session
-1. Step 3 chat: rerun `price_analysis.ipynb` with `YIELD_SOURCE="era5"`; update the Step 3 results table (reference prices, capture factors, 2025 question).
-2. New chat: step 5 – DCF and bid calibration reading `step4/cost_inputs.yaml` (real 2026 DKK; nominal tax shields deflated; IDC on the capex phasing; two-rate discounting CfD/tail). Key paired sensitivity: DEA 2025-column cost (15 MW) vs 2030 column (20 MW).
+1. New chat: step 5 – DCF and bid calibration reading `step4/cost_inputs.yaml` (real 2026 DKK; nominal tax shields deflated; IDC on the capex phasing; two-rate discounting CfD/tail). Key paired sensitivity: DEA 2025-column cost (15 MW) vs 2030 column (20 MW).
 
 ### Open items
-- Step 2 hand-over done: `aap_hourly_<SITE>.csv`, hour-beginning UTC; ERA5 top-of-hour values converted to interval energy by trapezoid. Rerun step 3 with YIELD_SOURCE="era5".
+- Step 2 hand-over done and used in step 3 (ERA5 run 21 Oct 2026).
 - .gitignore now also excludes `step2/data/aap_hourly_*.csv` and `step2/outputs/*.csv.gz` (recreated by the notebook); `step2/outputs/yield_annual_summary.csv` and `yield_config.json` are committed. Step 4 adds `step4/data/` (DEA Excel) to .gitignore; `step4/outputs/` (small CSV/MD extracts) is committed.
 - DEA AF25 price dataset inspected (21 Oct 2026): hourly DK1/DK2 per climate year 1995/2008/2009 for 2030/2040/2050 (CET, 2025 DKK) → scenario method B (pair with ERA5 same weather year). AF26 not yet published. ERA5 1995 for both sites: `era5_openmeteo.py --extra-years 1995`.
 - Net-cap screen with DEA offshore-weighted prices (DK1 avg ≈348, DK2 ≈316 DKK/MWh, 2033–52): NSM uses ≈89–96 % of its DKK 15.7bn cap, Hesselø ≈74 % of 21.9bn. NSM cap likely binds in downside cases. Test properly in step 5.
