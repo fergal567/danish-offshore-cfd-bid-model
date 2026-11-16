@@ -7,7 +7,7 @@ it to 1995 (Asm).
 
 Model: gradient-boosted trees on ERA5 hourly features (100 m speed at t−1, t, t+1; 10 m speed;
 direction; air density; month; hour). Validation (train without 2008/2009, test on them):
-hourly R² 0.997 (NSM) / 0.992 (HES), mean ratio 1.000; method-B capture factors from reconstructed
+hourly R² 0.998 (NSM) / 0.991 (HES), mean ratio 1.000; method-B capture factors from reconstructed
 vs step-2 AAP differ by < 0.001. Metered = AAP × the constant step-2 ratio (0.96495).
 
 Usage (repo root):  python step5/reconstruct_aap_1995.py

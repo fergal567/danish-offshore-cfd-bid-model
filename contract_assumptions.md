@@ -112,7 +112,7 @@
 | I1 | UXO clearance | Full cost of Naval Command / Naval Diving Service | Annex F 11.6.2 | Doc | Inside capex |
 | I2 | Navigational chart update | ≈ DKK 0.6m | Annex F 11.6.3 | Doc | Immaterial |
 | I3 | Decommissioning | Full cost and a decommissioning guarantee set by the permits (amount not in tender docs; Danish permits typically require the cost estimate to be updated every 5 years) | Annex F 11.6.5; ENS production permits | Doc / Ext | Decom cost at end of life + security cost |
-| I4 | Decommissioning cost | DEA Technology Catalogue value (to be pulled in step 2) | — | Asm | End-of-life cash flow |
+| I4 | Decommissioning cost | 12 % of K1 (low 10 %, high 15 %), see step 4 D1; the DEA catalogue excludes decommissioning | — | Ext/Asm | End-of-life cash flow, year after end of life (base 2063) |
 | I5 | Capability compliance | Lidar ≥1, SCADA data packages, annual auditor statement, possible third-party verification of the AAP table – all at developer's cost | App 3 §§5.1, 5.5–5.6; Annex F 10.1.4 | Doc | Small opex line |
 | I6 | Data-penalty regime | Late data → AAP set to 0 (subsidy months) or to theoretical max (clawback months) | Annex F 10.5 | Doc | Not modelled (operational risk) |
 | I7 | Other state aid | Not allowed without DEA consent | Annex F 11.1.10 | Doc | No grants |

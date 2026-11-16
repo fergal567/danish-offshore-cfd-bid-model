@@ -110,9 +110,9 @@ pages.append(fig)
 fig = new_page(2)
 headline(fig, "Any one of these\ncloses the gap")
 items = [
-    ("4.5–4.7 %", "return, real after tax (my base: 5.0 %),\nabout 1 pp above Vattenfall’s own rate"),
+    ("4.5–4.7 %", "return, real after tax (my base: 5.0 %),\ninside Vattenfall’s own range for wind"),
     ("4–6 % lower", "build cost than my estimate\nfrom DEA data"),
-    ("P10 wind", "a high-output year, not the median"),
+    ("+3–6 % wind", "more output than my median estimate"),
 ]
 y = 0.70
 for big, small in items:
@@ -120,9 +120,9 @@ for big, small in items:
     fig.text(0.08, y - 0.07, small, fontsize=24, color=INK, va="top", linespacing=1.3)
     y -= 0.175
 fig.add_artist(plt.Line2D([0.08, 0.92], [0.2, 0.2], color=INK, lw=1.5))
-fig.text(0.08, 0.18, "My read: a bet on next-generation 20 MW turbines.",
+fig.text(0.08, 0.18, "The bids need the DEA’s 2030 costs (20 MW turbines).",
          fontsize=24, color=INK, fontweight="bold", va="top")
-fig.text(0.08, 0.135, "With 15 MW turbine costs it drops to 2.8–3.1 %, below Vattenfall’s rate.",
+fig.text(0.08, 0.135, "With its 2025 costs the return drops to 2.8–3.1 %, below Vattenfall’s range.",
          fontsize=19, color=GREY, va="top")
 pages.append(fig)
 
@@ -143,7 +143,7 @@ for i, (name, val, col, txt) in enumerate(bars):
 ax.set_xlim(0, 360)
 ax.set_ylim(-0.4, 2.95)
 ax.axis("off")
-fig.text(0.08, 0.29, "In a low-price scenario, Nordsøen Midt’s cap runs out\nin July 2047. Hesselø’s never does.",
+fig.text(0.08, 0.29, "In my low-price stress case, Nordsøen Midt’s cap runs\nout around 2047. Hesselø’s never does.",
          fontsize=23, color=INK, va="top", linespacing=1.35)
 fig.text(0.08, 0.15, "*Next tender (bids due Oct 2028): DKK 6.6bn cap\nover 20 years of the DEA’s output estimate.",
          fontsize=20, linespacing=1.3, color=GREY, va="top")

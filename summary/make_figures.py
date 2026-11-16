@@ -44,11 +44,14 @@ plt.rcParams.update({
 })
 
 # ---------------------------------------------------------------- gap chart
-sites = [("Nordsøen Midt", 504, 532.6), ("Hesselø", 542, 559.4)]
+# (name, awarded, base break-even, (lowest, highest) break-even across the modelling
+# choices in step5/outputs/other_checks.csv, i.e. the model's own judgement-call band)
+sites = [("Nordsøen Midt", 504, 532.6, (515.2, 554.6)), ("Hesselø", 542, 559.4, (540.6, 583.5))]
 
 fig, ax = plt.subplots(figsize=(TEXT_W * 0.48, 1.9))
-for i, (name, awarded, breakeven) in enumerate(sites):
+for i, (name, awarded, breakeven, (b_lo, b_hi)) in enumerate(sites):
     y = 1 - i
+    ax.barh(y, b_hi - b_lo, left=b_lo, height=0.42, color=LIGHT, edgecolor="none", zorder=0)
     ax.plot([awarded, breakeven], [y, y], color=ACCENT, lw=2.4, zorder=1)
     ax.scatter(awarded, y, s=50, facecolor="white", edgecolor=INK, lw=1.3, zorder=2)
     ax.scatter(breakeven, y, s=50, color=INK, zorder=2)
@@ -58,17 +61,18 @@ for i, (name, awarded, breakeven) in enumerate(sites):
     ax.text((awarded + breakeven) / 2, y + 0.24, f"+{gap:.0f} (+{gap / awarded:.1%})",
             ha="center", va="bottom", color=ACCENT)
 ax.set_yticks([1, 0], [s[0] for s in sites])
-ax.set_ylim(-0.55, 1.65)
+ax.set_ylim(-0.55, 1.75)
 ax.set_xlim(485, 595)
 ax.set_xticks(range(500, 591, 30))
 ax.set_xlabel("Strike price, DKK/MWh (real 2026)")
 ax.spines["left"].set_visible(False)
 handles = [
     plt.Line2D([], [], marker="o", ls="", mfc="white", mec=INK, label="Awarded"),
-    plt.Line2D([], [], marker="o", ls="", color=INK, label="Break-even, base case"),
+    Patch(color=LIGHT, label="Range over model choices"),
+    plt.Line2D([], [], marker="o", ls="", color=INK, label="Break-even, base"),
 ]
 ax.legend(handles=handles, loc="lower left", bbox_to_anchor=(-0.02, 1.0), frameon=False,
-          handletextpad=0.2, borderaxespad=0, ncol=2, columnspacing=1.0)
+          handletextpad=0.3, borderaxespad=0, ncol=1, columnspacing=0.6, handlelength=1.0)
 fig.tight_layout(pad=0.2)
 fig.savefig(OUT / "fig_gap.png", dpi=300)
 plt.close(fig)
@@ -81,15 +85,16 @@ rows = [
     "Discount rate",
     "Operating costs",
     "Wind output (P10 / P90)",
-    "Price outlook",
+    "Price outlook (S1–S5)",
+    "DEA capture ratio (S1-B′)",
     "Asset life (35 / 25 yrs)",
     "Availability 93.5 %",
 ]
 data = {
     "Nordsøen Midt": dict(base=533, awarded=504, vals=[
-        (456, 977), (474, 811), (504, 727), (493, 581), (526, None), (512, 562), (None, 547)]),
+        (456, 977), (474, 811), (504, 727), (493, 581), (526, None), (None, 606), (512, 562), (None, 547)]),
     "Hesselø": dict(base=559, awarded=542, vals=[
-        (477, 656), (498, 657), (530, 631), (517, 609), (553, 584), (537, 591), (None, 575)]),
+        (477, 656), (498, 657), (530, 631), (517, 609), (553, 584), (None, 591), (537, 591), (None, 575)]),
 }
 XMIN, XMAX = 425, 760
 SMALL = FS - 0.5

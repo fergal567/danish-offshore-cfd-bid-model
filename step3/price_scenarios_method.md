@@ -1,6 +1,6 @@
 # Project 1 · Step 3 — Method for 2033–2052 price scenarios (DK1 / DK2)
 
-**Prepared:** 21 Oct 2026 · updated same day after inspecting the AF25 price dataset and sensitivity annex · Status: method chosen, not yet run.
+**Prepared:** 21 Oct 2026 · updated same day after inspecting the AF25 price dataset and sensitivity annex · Status: method chosen and run in step 5 (results in `step5/bid_calibration_memo.md`).
 **Feeds:** step 5 (DCF and bid calibration) for Nordsøen Midt (NSM, DK1) and Hesselø (HES, DK2), CfD 2033–2052 (contract_assumptions D4) plus merchant tail 2053–2062 (D5).
 
 Status tags as in `contract_assumptions.md`: **Doc** (project tender files), **Ext** (named outside source), **Asm** (my assumption — change freely).

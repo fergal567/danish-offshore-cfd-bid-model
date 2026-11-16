@@ -1,6 +1,7 @@
-# Project 1 – Step 7: primary-source verification
+# Project 1 – Step 7: source verification
 
-**Prepared:** 21 Oct 2026 · **Status:** findings recorded; model changes not yet run
+**Prepared:** 21 Oct 2026 · **Status:** findings recorded; V1 and V6 applied and step 5 re-run on 21 Oct 2026 (results in `step5/bid_calibration_memo.md`). Revised 16 Nov 2026.
+**Sources:** V1–V4 were checked directly against SKM2025.37.SR on retsinformation.dk. Rows marked "(via report)" rely on a secondary research report and still need checking against the primary document; they are the open items in §4.
 **Input:** focused research report "Primary-source verification of WACC, AF25 prices, Danish tax classes and DEA offshore data" (21 Oct 2026), checked against `step4/cost_assumptions.md` and `step5/bid_calibration_memo.md`. SKM2025.37.SR wording re-checked directly on retsinformation.dk.
 
 Tags as elsewhere: **Doc** (tender documents) · **Ext** (named outside source) · **Asm** (my assumption).
@@ -27,22 +28,26 @@ The rate that sets NPV = 0 at the awarded strike is the project's **implied retu
 
 | | Real post-tax |
 |---|---|
-| Implied return at the awarded strikes (CfD period; tail +2 pp) | **4.25 % (NSM), 4.5 % (HES)** |
+| Implied return at the awarded strikes (CfD period; tail +2 pp), after the step-7 re-run | **4.5 % (NSM), 4.7 % (HES)** |
 | Vattenfall AB, BA Wind discount rate after tax, FY2025 (read as nominal) | ≈ 3.6–5.3 % |
 | Vattenfall NV offshore impairment rate, FY2024 (if nominal) | ≈ 2.9 % |
 | RWE implied WACC range | ≈ 2.9–4.9 % |
 | RWE target IRR (> 8.5 % nominal) | > ≈ 6.4 % |
 
-Reading (Asm): Vattenfall's own after-tax discount rate for wind is about 3.6–5.3 % real across its wind units. A Danish offshore farm with a 20-year two-sided CfD should sit towards the low end (≈ 3.6 %), so the bids imply a return only about **0.6–0.9 pp** above it – well below the 150–350 bp spreads RWE and Ørsted say they target. The bids therefore look aggressive on return, not just plausible. The 5.0 % real base case sits mid-range of Vattenfall's own rates, which supports it as a neutral central case. Final numbers depend on the step-5 re-run (§3), which raises the implied return slightly.
+Reading (Asm): Vattenfall's own after-tax discount rate for wind is about 3.6–5.3 % real across its wind units. A Danish offshore farm with a 20-year two-sided CfD should sit towards the low end (≈ 3.6 %), so the bids imply a return **inside** Vattenfall's range, about **1 pp above its low end** – below the 150–350 bp spreads RWE and Ørsted say they target. The 5.0 % real base case sits in the upper third of Vattenfall's range, so it is a slightly conservative central case rather than a neutral one.
 
-Wording to use from now on: "the bids imply a real after-tax return of about 4.25–4.5 %", not "a cost of capital of 4.25–4.5 %".
+Wording to use from now on: "the bids imply a real after-tax return of about 4.5–4.7 %", not "a cost of capital of 4.5–4.7 %".
 
-## 3. Expected effect of V1 and V6 (rough, before re-running step 5)
+## 3. Effect of V1 and V6
+
+**Re-run result (21 Oct 2026):** V6 −19 / −20 DKK/MWh, V1 +4.5 / +4.8, net break-even 533 (NSM) / 559 (HES), a 3–6 % gap. The rough estimate below is kept for the record.
+
+Rough estimate made before the re-run
 
 Scaled from the step-5 sensitivities (Asm):
 - V6, insurance out of base opex (−DKK 75k/MW/yr): break-even about **−20 DKK/MWh** at both sites (from the Hesselø opex sensitivity, ≈ 0.27 DKK/MWh per DKK 1k/MW/yr).
 - V1, cables and substation to 7 %: about **+5 to +7 DKK/MWh** (export cable alone was ≈ 1 DKK/MWh for 5.5 % of K1; this moves ≈ 33 %).
-- Net: break-even roughly 10–15 DKK/MWh lower, so the gap to the awarded strikes narrows from 6–9 % to roughly 3–6 %. **To be confirmed by re-running step 5.**
+- Net: break-even roughly 10–15 DKK/MWh lower, so the gap to the awarded strikes narrows from 6–9 % to roughly 3–6 % (confirmed by the re-run).
 
 ## 4. Still open
 
@@ -51,3 +56,5 @@ Scaled from the step-5 sensitivities (Asm):
 3. DEA chapter 21 formulas; whether chapter 21's O&M definition matches the guideline (insurance, network charges).
 4. Overplanting as merchant upside (AF25 assumes it at both sites).
 5. Hesselø scale / nature-inclusive capex premium (unchanged).
+6. Check the "(via report)" rows against their primary documents, starting with V6 (insurance, the largest step-7 change) and V7 (Vattenfall's rate). Name the research report or replace it with primary citations.
+7. V6 says DEA fixed O&M includes network or system charges, but the Energinet producer tariffs (O4, 9.2 DKK/MWh) are still charged in the base case. Decide and apply consistently.
