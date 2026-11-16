@@ -4,11 +4,11 @@ Cash-flow model for Nordsøen Midt (DK1, 1,005 MW, strike DKK 504/MWh) and Hesse
 
 | File | What it is |
 |---|---|
-| `dcf_model.py` | The model: input loaders, AF25 method-B price scenarios, monthly CfD settlement with net cap and payment lag, tax pools, two-rate discounting, solvers |
+| `dcf_model.py` | The model: input loaders, AF25 method-B price scenarios, monthly CfD settlement with the Sep(y−1) NPI strike reset, net cap and payment lag, Nordsøen Syd's wake on NSM from 2035, tax pools, two-rate discounting, solvers |
 | `bid_calibration.ipynb` | Runs every analysis and writes `outputs/` |
 | `bid_calibration_memo.md` | Two-page memo with the headline findings |
 | `reconstruct_aap_1995.py` | Rebuilds hourly 1995 AAP from ERA5 wind by learning step 2's wind → AAP mapping (holdout R² 0.998 / 0.991). Writes `step5/data/aap_hourly_1995_<SITE>.csv`, which is used only for AF25 price pairing |
-| `tests/test_dcf_model.py` | 27 pytest tests. The synthetic ones run without data; the integration ones are skipped if the data files are missing |
+| `tests/test_dcf_model.py` | 29 pytest tests. The synthetic ones run without data; the integration ones are skipped if the data files are missing |
 | `outputs/` | Result CSVs and PNG charts (small, committed) |
 
 ## Inputs (paths are relative to the repo root)

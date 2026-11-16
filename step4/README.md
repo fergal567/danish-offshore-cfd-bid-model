@@ -29,3 +29,5 @@ python -m pytest step4\tests -q
 ```
 
 Requires `pyyaml`, `openpyxl`, `pytest`.
+
+NSM's onshore cable (contract G2) uses the DEA *Technology Data for Energy Transport* (data sheets v8, July 2025, sheet 1.7, AC onshore cables, 2025 EUR; https://ens.dk/en/analyses-and-statistics/technology-data-transport-energy, CC BY 4.0) and the route in Energinet's *Projektbeskrivelse for Landanlæg, Nordsøen I Midt* (dok. 23/02056-2, Nov 2025). The value is typed into `build_cost_inputs.py`; the workbook isn't needed to rebuild.

@@ -18,7 +18,7 @@
       "target_mean_150": 10.44,
       "weibull_A_150": 11.76,
       "weibull_k_150": 2.25,
-      "wake_internal": 0.1,
+      "wake_internal": 0.12,
       "wake_external": 0.01,
       "mincap_MW": 1005.0,
       "calibration_factor_mean": 1.0226117053853259
@@ -31,12 +31,12 @@
       "n_turbines": 53,
       "alpha": 0.09,
       "target_mean_150": 9.63,
-      "weibull_A_150": 10.99,
+      "weibull_A_150": 10.873,
       "weibull_k_150": 2.22,
-      "wake_internal": 0.1,
+      "wake_internal": 0.12,
       "wake_external": 0.003,
       "mincap_MW": 795.0,
-      "calibration_factor_mean": 1.0583236334471895
+      "calibration_factor_mean": 1.0470566757480702
     }
   },
   "losses": {

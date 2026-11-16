@@ -51,13 +51,24 @@ def test_dea_components_sum_to_sheet_total():
 
 
 def test_site_adjustment_direction():
-    # both sites are closer to shore than the DEA 60 km site -> cheaper export cable and lower total
+    # both sites are closer to shore than the DEA 60 km site -> cheaper export cable and a lower offshore total
+    # (the DEA's point of connection is the coastline, so the onshore cable is compared separately)
     for s in ("NSM", "HES"):
-        c = Y["capex"][s]
-        assert c["dea_components_meur2020_per_mw"]["export_cables"] < 0.2648
-        assert c["dea_base_meur2020_per_mw"]["base"] < c["dea_unadjusted_2030_meur2020_per_mw"]
+        c = Y["capex"][s]["dea_components_meur2020_per_mw"]
+        assert c["export_cables"] < 0.2648
+        assert c["total"] - c["onshore_cable"] < Y["capex"][s]["dea_unadjusted_2030_meur2020_per_mw"]
+    # NSM's export route (45.7 km) is longer than Hesselø's (33 km)
     assert (Y["capex"]["NSM"]["dea_components_meur2020_per_mw"]["export_cables"]
-            < Y["capex"]["HES"]["dea_components_meur2020_per_mw"]["export_cables"])
+            > Y["capex"]["HES"]["dea_components_meur2020_per_mw"]["export_cables"])
+
+
+def test_onshore_cable():
+    # NSM: 53 km x DEA Energy Transport 4.51 kEUR2025/km/MW, carried in EUR2020; Hesselø not costed (open)
+    m = Y["meta"]
+    eur25_in_eur20 = 7.46 * m["npi_base_2026M05"] / 100 / m["dkk2026_per_eur2020"]
+    assert Y["capex"]["NSM"]["dea_components_meur2020_per_mw"]["onshore_cable"] == pytest.approx(
+        53 * 4.51e-3 * eur25_in_eur20, rel=1e-3)
+    assert Y["capex"]["HES"]["dea_components_meur2020_per_mw"]["onshore_cable"] == 0
 
 
 def test_all_in_adds_up():

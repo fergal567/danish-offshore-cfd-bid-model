@@ -40,7 +40,8 @@ sites:
   NSM:
     name: Nordsøen Midt
     mw: 1005
-    dist_km: 20
+    dist_km: 45.7
+    onshore_km: 53
     depth_m:
     - 25
     - 35
@@ -49,6 +50,7 @@ sites:
     name: Hesselø
     mw: 795
     dist_km: 33
+    onshore_km: 0
     depth_m:
     - 18
     - 30
@@ -61,29 +63,31 @@ capex:
       foundation: 0.4136
       array_cables: 0.0421
       substation: 0.5737
-      export_cables: 0.1236
-      total: 2.2519
+      export_cables: 0.2143
+      onshore_cable: 0.2044
+      total: 2.5471
     dea_components_2025col_meur2020_per_mw:
       project_development: 0.1765
       turbines: 1.1915
       foundation: 0.5296
       array_cables: 0.0441
       substation: 0.5737
-      export_cables: 0.1236
-      total: 2.639
+      export_cables: 0.2143
+      onshore_cable: 0.2044
+      total: 2.9342
     dea_unadjusted_2030_meur2020_per_mw: 2.3931
     dea_base_meur2020_per_mw:
-      low: 1.9141
-      base: 2.2519
-      high: 2.639
+      low: 2.165
+      base: 2.5471
+      high: 2.9342
     dea_base_mdkk_per_mw:
-      low: 17.052
-      base: 20.062
-      high: 23.51
+      low: 19.288
+      base: 22.691
+      high: 26.14
     contingency_mdkk_per_mw:
-      low: 0.853
-      base: 1.505
-      high: 2.351
+      low: 0.964
+      base: 1.702
+      high: 2.614
     owner_devex_mdkk_per_mw:
       low: 0.05
       base: 0.1
@@ -97,21 +101,21 @@ capex:
       base: 0.659
       high: 0.725
     capex_excl_energinet_mdkk_per_mw:
-      low: 17.955
-      base: 21.666
-      high: 26.06
+      low: 20.302
+      base: 24.493
+      high: 28.953
     capex_excl_energinet_meur2026_per_mw:
-      low: 2.407
-      base: 2.904
-      high: 3.493
+      low: 2.721
+      base: 3.283
+      high: 3.881
     capex_all_in_mdkk_per_mw:
-      low: 18.548
-      base: 22.325
-      high: 26.786
+      low: 20.895
+      base: 25.152
+      high: 29.678
     capex_all_in_mdkk_total:
-      low: 18641.0
-      base: 22437.0
-      high: 26920.0
+      low: 21000.0
+      base: 25278.0
+      high: 29826.0
   HES:
     dea_components_meur2020_per_mw:
       project_development: 0.1684
@@ -120,6 +124,7 @@ capex:
       array_cables: 0.0421
       substation: 0.5737
       export_cables: 0.1695
+      onshore_cable: 0.0
       total: 2.284
     dea_components_2025col_meur2020_per_mw:
       project_development: 0.1765
@@ -128,6 +133,7 @@ capex:
       array_cables: 0.0441
       substation: 0.5737
       export_cables: 0.1695
+      onshore_cable: 0.0
       total: 2.6673
     dea_unadjusted_2030_meur2020_per_mw: 2.3931
     dea_base_meur2020_per_mw:
@@ -172,7 +178,7 @@ capex:
       high: 21512.0
 capex_phasing:
   dea_development_share:
-    NSM: 0.0748
+    NSM: 0.0661
     HES: 0.0737
   profiles:
     base:
@@ -231,9 +237,9 @@ opex:
     base: 30.71
     high: 39.31
   energinet_tariffs_dkk_per_mwh:
-    low: 8.0
-    base: 9.2
-    high: 12.0
+    low: 0.0
+    base: 0.0
+    high: 9.2
   balancing_dkk_per_mwh:
     low: 8.0
     base: 15.0
@@ -255,11 +261,12 @@ decommissioning:
     low: 0.1
     base: 0.12
     high: 0.15
+  excludes: 'onshore cable (share of DEA base kept: NSM 0.920, HES 1.000)'
   cost_mdkk_per_mw:
     NSM:
-      low: 1.71
-      base: 2.41
-      high: 3.53
+      low: 1.77
+      base: 2.5
+      high: 3.61
     HES:
       low: 1.73
       base: 2.44
@@ -293,7 +300,7 @@ tax:
         base: 0.07
         high: 0.07
       method: declining balance
-      assets: array cables, export cable, offshore substation
+      assets: array cables, export cable, offshore substation, onshore cable
       law: '§5C stk. 2 nr. 1 (infrastructure for transport of electricity); Skatterådet SKM2025.37.SR (19 Nov 2024),
         Q5: ''forskellige typer kabler og transformatorstationer mv.'' up to 7 % (step 7, V1). Low case 15 % = treated
         as production plant'
@@ -309,10 +316,10 @@ tax:
       method: straight line
       law: §43 (tilslutningsafgifter), from when the fee is due
   export_cable_share_of_dea_base:
-    NSM: 0.0549
+    NSM: 0.0841
     HES: 0.0742
   infra_7pct_share_of_dea_base:
-    NSM: 0.3283
+    NSM: 0.4062
     HES: 0.3438
   depreciation_start: COD year (2033) for plant/cable; payment year for §43 contribution
   losses:

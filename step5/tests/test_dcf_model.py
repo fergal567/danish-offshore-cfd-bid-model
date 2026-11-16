@@ -69,10 +69,14 @@ def test_cap_switch_off():
 # ----------------------------------------------------------------------------- revenue identity, lag
 def test_revenue_identity_strike_times_aap():
     """Metered = AAP, no cap binding, no negative prices -> CfD + market = strike × AAP (step 3 §1)."""
-    p = synth_params(metered_monthly=np.full(12, 400_000.0))
+    p = synth_params(metered_monthly=np.full(12, 400_000.0), strike_indexation="real")
     r = d.run_model(p, flat_scenario(320.0))
     a = r.annual.loc[p.cod:p.cfd_end - 1]
     np.testing.assert_allclose(a["cfd_accrued"] + a["merchant"], p.strike * a["aap_gwh"] * 1e3 / 1e6)
+    # with the lagged NPI reset the identity holds month by month at that month's strike
+    m = d.run_model(replace(p, strike_indexation="lagged"), flat_scenario(320.0)).monthly
+    m = m[m.year < p.cfd_end]
+    np.testing.assert_allclose(m["cfd_paid"] + m["merchant"], m["strike"] * m["aap_mwh"] / 1e6)
 
 
 def test_payment_lag_shifts_but_preserves_total():
@@ -114,7 +118,19 @@ def test_overplanting_zero_is_neutral():
 
 def test_lagged_strike_indexation_lowers_value():
     p = synth_params()
-    assert d.run_model(replace(p, strike_indexation="lagged"), flat_scenario()).npv < d.run_model(p, flat_scenario()).npv
+    assert p.strike_indexation == "lagged"                      # base case since the Nov 2026 review (A4, Doc)
+    assert d.run_model(p, flat_scenario()).npv < d.run_model(replace(p, strike_indexation="real"), flat_scenario()).npv
+
+
+def test_late_external_wake_only_from_its_start_year():
+    p = synth_params()
+    r0 = d.run_model(p, flat_scenario())
+    r1 = d.run_model(replace(p, ext_wake_late=0.015, ext_wake_late_from=2035), flat_scenario())
+    a0, a1 = r0.annual, r1.annual
+    assert a1.loc[2033:2034, "aap_gwh"].tolist() == pytest.approx(a0.loc[2033:2034, "aap_gwh"].tolist())
+    assert a1.loc[2035:, "aap_gwh"].sum() == pytest.approx(0.985 * a0.loc[2035:, "aap_gwh"].sum())
+    assert a1.loc[2035:, "metered_gwh"].sum() == pytest.approx(0.985 * a0.loc[2035:, "metered_gwh"].sum())
+    assert r1.npv < r0.npv
 
 
 # ----------------------------------------------------------------------------- capex, tax
@@ -181,7 +197,7 @@ def test_volume_factors():
     assert d.volume_factors() == pytest.approx((1.0, 1.0))
     aap_f, met_f = d.volume_factors(availability=0.935)
     assert aap_f == pytest.approx(0.945 / 0.97) and met_f == pytest.approx(0.935 / 0.96)
-    assert d.volume_factors(internal_wake=0.13)[0] == pytest.approx(0.87 / 0.90)
+    assert d.volume_factors(internal_wake=0.13)[0] == pytest.approx(0.87 / 0.88)   # relative to the 12 % base
 
 
 def test_p90_factor_range():
@@ -259,6 +275,13 @@ def test_yield_profile_matches_step2(inputs):
     for site in d.SITES:
         prof = d.monthly_profile(inputs.aap[site])
         assert prof["aap_mwh"].sum() / 1e3 == pytest.approx(ys[ys.site == site]["aap_proxy_GWh"].mean(), rel=2e-3)
+
+
+@pytest.mark.skipif(not DATA, reason="step2/4/5 data files not present")
+def test_nss_wake_on_nsm_only(inputs):
+    assert d.make_params(inputs, "NSM").ext_wake_late == pytest.approx(0.015)
+    assert d.make_params(inputs, "HES").ext_wake_late == 0.0
+    assert d.make_params(inputs, "NSM", nss_wake=0.0).ext_wake_late == 0.0
 
 
 @pytest.mark.skipif(not DATA, reason="step2/4/5 data files not present")

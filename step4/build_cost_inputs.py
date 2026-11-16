@@ -44,14 +44,29 @@ F_HICP = HICP_EA_2026M05 / HICP_EA_2020_AVG
 
 DKK26_PER_EUR20 = EUR_DKK * F_NPI              # 1 EUR(2020) -> DKK(2026, NPI)
 DKK26_PER_EUR26 = EUR_DKK                      # for inputs already in 2026 EUR
+NPI_2025_AVG = 100.0                           # PRIS04 base year (2025 = 100)
+DKK26_PER_EUR25 = EUR_DKK * NPI_BASE / NPI_2025_AVG   # DEA Energy Transport data are in 2025 EUR
 
 # ---------------------------------------------------------------------------
 # 2. Sites (from step 2 decisions / contract rows F6, B5)
 # ---------------------------------------------------------------------------
+# dist_km = offshore export-cable distance (yield point to landfall); onshore_km = developer-built onshore cable
+# to the point of connection (contract G2). Revised Nov 2026 after external review:
+#   NSM: yield point (56.00 N, 7.55 E) to Energinet's landfall just south of Nymindegab (≈55.80 N, 8.19 E) = 45.7 km
+#        (was 20 km). Onshore: ≈49 km 275 kV (2 systems) to the Hjortkær coupling station + ≈4 km 400 kV to Endrup
+#        = 53 km, which the concession winner "skal anlægge, eje og drive" (Energinet, Projektbeskrivelse for
+#        Landanlæg Nordsøen I Midt, dok. 23/02056-2, 27 Nov 2025, §1.1/1.3; SGAV draft §25 permit, Jan 2026) – Ext.
+#   HES: onshore leg not costed (open item; scope under the 2025 framework not checked).
 SITES = {
-    "NSM": {"name": "Nordsøen Midt", "mw": 1005, "dist_km": 20, "depth_m": [25, 35], "zone": "DK1"},
-    "HES": {"name": "Hesselø", "mw": 795, "dist_km": 33, "depth_m": [18, 30], "zone": "DK2"},
+    "NSM": {"name": "Nordsøen Midt", "mw": 1005, "dist_km": 45.7, "onshore_km": 53, "depth_m": [25, 35], "zone": "DK1"},
+    "HES": {"name": "Hesselø", "mw": 795, "dist_km": 33, "onshore_km": 0, "depth_m": [18, 30], "zone": "DK2"},
 }
+# DEA Technology Data for Energy Transport (data sheets v8, July 2025), sheet 1.7 "el trans AC&DC cables",
+# "AC onshore cables [kEUR/km/MW], 500 MW capacity", 2030 column = 4.51, 2025 EUR (Index sheet); includes AC
+# compensation (note 12); excludes permits, rights and landowner compensation (note 8). DEA chapter 21 puts the
+# offshore point of connection at the coastline ("costs associated with onshore cables are not included", p. 142).
+ONSHORE_CABLE_KEUR25_PER_KM_MW = 4.51          # Ext
+ONSHORE_CABLE_MEUR20_PER_KM_MW = ONSHORE_CABLE_KEUR25_PER_KM_MW / 1000 * DKK26_PER_EUR25 / DKK26_PER_EUR20
 COD = "2033-01-01"  # contract D4 (assumption)
 
 
@@ -92,7 +107,9 @@ def site_components(site: str, year: str) -> dict:
     depth = sum(s["depth_m"]) / 2
     comp["foundation"] = interp(depth, [(p["depth_m"], p["value"])
                                         for p in SI[f"foundation_vs_depth_{year}"]])
-    comp["total"] = sum(comp[k] for k in COMPONENTS)
+    # developer-built onshore cable (G2), carried in 2020 EUR like the other components; same rate in both columns
+    comp["onshore_cable"] = s["onshore_km"] * ONSHORE_CABLE_MEUR20_PER_KM_MW
+    comp["total"] = sum(comp[k] for k in COMPONENTS) + comp["onshore_cable"]
     return comp
 
 
@@ -192,7 +209,9 @@ opex = {
     "fixed_om_dkk_k_per_mw_yr": scale(fom, DKK26_PER_EUR20 / 1000, 1),
     "insurance_dkk_k_per_mw_yr": scale(INSURANCE_EUR26, DKK26_PER_EUR26 / 1000, 1),
     "variable_om_dkk_per_mwh": scale(vom, DKK26_PER_EUR20, 2),
-    "energinet_tariffs_dkk_per_mwh": lbh(8.0, 9.2, 12.0),   # 2027: 0.50 + 0.42 øre/kWh (contract G6)
+    # DEA guideline (step 7, V6): fixed O&M includes network/system charges, so producer tariffs are out of the
+    # base case (Nov 2026 review). High = the old base, 2027 tariffs 0.50 + 0.42 øre/kWh (contract G6).
+    "energinet_tariffs_dkk_per_mwh": lbh(0.0, 0.0, 9.2),
     "balancing_dkk_per_mwh": lbh(8.0, 15.0, 25.0),          # contract B14 (Asm)
     "capability_compliance_mdkk_per_yr": lbh(1.5, 3.0, 5.0),  # contract I5 (Asm)
     "aap_commissioning_oneoff_mdkk": lbh(2.0, 5.0, 10.0),     # App 3 §5, COD year (Asm)
@@ -200,21 +219,22 @@ opex = {
 }
 
 # Decommissioning and guarantees
+# Decommissioning is a share of the DEA base excluding the onshore cable, which is assumed left in the ground or
+# transferred to Energinet (contract G8) rather than removed (Asm).
+DECOM_BASE_SHARE = {s: 1 - SITE_DEA[s]["2030"]["onshore_cable"] / SITE_DEA[s]["2030"]["total"] for s in SITES}
 decom = {
     "cost_share_of_dea_base": lbh(0.10, 0.12, 0.15),
+    "excludes": "onshore cable (share of DEA base kept: " + ", ".join(f"{s} {v:.3f}" for s, v in DECOM_BASE_SHARE.items()) + ")",
     "cost_mdkk_per_mw": {s: scale(capex[s]["dea_base_mdkk_per_mw"], 1, 2) for s in SITES},
     "timing": "year after end of economic life (base 2063)",
     "security_posted_from": "15 years after first power (assume 2047)",
     "security_fee_pct_per_yr": lbh(0.0, 0.5, 1.0),
 }
 for s in SITES:
+    # matching share in each case, on the DEA base excluding the onshore cable
     decom["cost_mdkk_per_mw"][s] = {
-        k: round(capex[s]["dea_base_mdkk_per_mw"][k] * decom["cost_share_of_dea_base"]["base"], 2)
+        k: round(capex[s]["dea_base_mdkk_per_mw"][k] * DECOM_BASE_SHARE[s] * decom["cost_share_of_dea_base"][k], 2)
         for k in ("low", "base", "high")}
-    # use the matching share in each case
-    for k in ("low", "high"):
-        decom["cost_mdkk_per_mw"][s][k] = round(
-            capex[s]["dea_base_mdkk_per_mw"][k] * decom["cost_share_of_dea_base"][k], 2)
 
 guarantees = {
     "performance_guarantee_mdkk": 308.8,        # Annex F 17.2 (NSS), contract E5
@@ -235,7 +255,7 @@ tax = {
                            "law": "Afskrivningsloven §5C stk. 1 nr. 4 (el-production plant >1 MW; "
                                   "wind turbines acquired from 2013), stk. 4"},
         "infrastructure_7pct": {"rate": lbh(0.15, 0.07, 0.07), "method": "declining balance",
-                                "assets": "array cables, export cable, offshore substation",
+                                "assets": "array cables, export cable, offshore substation, onshore cable",
                                 "law": "§5C stk. 2 nr. 1 (infrastructure for transport of electricity); "
                                        "Skatterådet SKM2025.37.SR (19 Nov 2024), Q5: 'forskellige typer kabler og "
                                        "transformatorstationer mv.' up to 7 % (step 7, V1). Low case 15 % = "
@@ -248,9 +268,9 @@ tax = {
     },
     "export_cable_share_of_dea_base": {s: round(SITE_DEA[s]["2030"]["export_cables"] / SITE_DEA[s]["2030"]["total"], 4)
                                        for s in SITES},
-    # 7 % pool per SKM2025.37.SR: array cables + export cable + offshore substation (step 7, V1)
+    # 7 % pool per SKM2025.37.SR: array cables + export cable + offshore substation (step 7, V1) + onshore cable
     "infra_7pct_share_of_dea_base": {s: round(sum(SITE_DEA[s]["2030"][k] for k in
-                                                  ("array_cables", "substation", "export_cables"))
+                                                  ("array_cables", "substation", "export_cables", "onshore_cable"))
                                               / SITE_DEA[s]["2030"]["total"], 4) for s in SITES},
     "depreciation_start": "COD year (2033) for plant/cable; payment year for §43 contribution",
     "losses": {"base": "used immediately via Danish joint taxation (sambeskatning)",
@@ -314,6 +334,7 @@ for s in SITES:
     cp = capex[s]
     rows += [
         (f"{s} DEA base capex", fmt(cp["dea_base_meur2020_per_mw"], 3), "M€2020/MW"),
+        (f"{s} of which onshore cable", f'{cp["dea_components_meur2020_per_mw"]["onshore_cable"]:.3f}', "M€2020/MW"),
         (f"{s} DEA base capex", fmt(cp["dea_base_mdkk_per_mw"], 2), "DKK m/MW"),
         (f"{s} capex excl. Energinet", fmt(cp["capex_excl_energinet_mdkk_per_mw"], 2), "DKK m/MW"),
         (f"{s} capex excl. Energinet", fmt(cp["capex_excl_energinet_meur2026_per_mw"], 2), "M€2026/MW"),
@@ -325,6 +346,7 @@ rows += [
     ("Fixed O&M", fmt(opex["fixed_om_dkk_k_per_mw_yr"]), "DKK k/MW/yr"),
     ("Insurance", fmt(opex["insurance_dkk_k_per_mw_yr"]), "DKK k/MW/yr"),
     ("Variable O&M", fmt(opex["variable_om_dkk_per_mwh"], 2), "DKK/MWh"),
+    ("Energinet producer tariffs", fmt(opex["energinet_tariffs_dkk_per_mwh"], 1), "DKK/MWh"),
 ]
 (HERE / "outputs").mkdir(exist_ok=True)
 tbl = "| Item | Low / Base / High | Unit |\n|---|---|---|\n" + "\n".join(
