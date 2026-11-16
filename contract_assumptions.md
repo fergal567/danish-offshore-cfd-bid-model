@@ -16,7 +16,7 @@
 | A1 | What is bid | One strike price, DKK/MWh excl. VAT, max 4 decimals; lowest bid wins; price is the only award criterion; ties drawn by lot | Proc Spec §10.1–10.2; Annex F 2.49 | Doc | The calibration target: solve for capex/WACC/yield combinations that give NPV = 0 at the awarded strike |
 | A2 | Awarded strike prices | NSM **DKK 504/MWh**; Hesselø **DKK 542/MWh** (Vattenfall, 4 Aug 2026; 2 and 5 bids) | DEA press release, 4 Aug 2026 ([via Ritzau](https://via.ritzau.dk/pressemeddelelse/15074199/danmark-far-to-nye-havvindmolleparker?lang=da))| Ext | `K0_NSM = 504`, `K0_HES = 542` |
 | A3 | Strike price base | 2026 prices; indexation base = NPI May 2026 (bid deadline 20 May 2026) | Guide §2.3 (NSS itself: 2028 prices, base NPI Oct 2028, App 3 §2.1.1) | Doc (Guide) ⚠ site | `K_y = K0 × NPI_Sep(y−1) / NPI_May2026` |
-| A4 | Strike indexation | 100% Danish Net Price Index (NPI), reset each 1 Jan using previous September NPI, for the full 20 years | App 3 §2.1.1; Annex F 11.1.12 | Doc | Model in real 2026 DKK (strike constant in real terms), or nominal with an NPI path |
+| A4 | Strike indexation | 100% Danish Net Price Index (NPI), reset each 1 Jan using previous September NPI, for the full 20 years | App 3 §2.1.1; Annex F 11.1.12 | Doc | Model in real 2026 DKK with the Sep(y−1) reset applied all year (base since Nov 2026); a constant real strike is a sensitivity |
 | A5 | NPI forecast (only if modelling nominal) | 2.0%/yr | Guide §2.3 uses 2% purely as an example | Asm | Inflation path for strike, net cap, opex |
 | A6 | Maximum bid price | None found in tender documents or ministry summary; the binding limit is the net payment cap (B5) | Proc Spec §10; KEFM one-pager (May 2025) | Doc (absence) | No bid ceiling constraint |
 
@@ -46,7 +46,7 @@
 | C1 | Negative-price hours | No suspension of support. AAP still counts; price floored at 0 in RP only. Developer may curtail for market reasons and still be settled on AAP | App 3 §§2.6.1, 2.6.3; Guide §1.5 (Example 2), §2.1 | Doc | Dispatch rule: `gen_h = 0` when `p_h < 0`; AAP_h still in volume and RP weights |
 | C2 | Forced (TSO) curtailment | Settled as normal on AAP; needs a log and an annual solemn declaration, otherwise subsidy can be reclaimed | App 3 §2.6.1; Annex F 11.1.6–11.1.7 | Doc | AAP unaffected; only merchant sales lost |
 | C3 | Wake treatment | AAP table is built empirically from the farm's own SCADA in a 12-month commissioning campaign, so internal wakes and any external wakes present at that time are embedded in AAP. A later neighbour changes AAP only via recalibration (every 5 yrs, or if AAP exceeds actual by >5% in >3 months per 12) or recommissioning | App 3 §§4, 5.3–5.4; App 3.1 §§2, 4 | Doc + interpretation | AAP = potential **net** of wakes; external wake risk stays with the developer |
-| C4 | External wake scenario | NSM: Thor wake from COD; NSS wake on NSM from 2035 | Thor in operation 2027 (research report); NSS deadline Annex F 7.3.1 | Asm | Later PyWake step (Project 2) supplies the % loss |
+| C4 | External wake scenario | NSM: Thor wake from COD; NSS wake on NSM from 2035 | Thor in operation 2027 (research report); NSS deadline Annex F 7.3.1 | Asm | Thor 1 % (step 2); NSS 1.5 % from 2035 in the step-5 base (sector-share estimate, Nov 2026); a later PyWake step (Project 2) should replace both |
 | C5 | Overplanting wakes | Overplanted turbines are in the upstream ranking; their wake on MinCap turbines lowers MinCap's AAP | App 3 §4.1.1; App 3.1 §2.1 | Doc | Overplanting scenarios must reduce MinCap AAP |
 
 ## D. Term and timing
@@ -89,11 +89,11 @@
 | # | Assumption | Value (base case) | Source | Status | How it enters the model |
 |---|---|---|---|---|---|
 | G1 | Voluntary? | Yes; if connecting, Grid Connection Agreement with Energinet required (notify within 1 month of signing) | Proc Spec §1; Annex F 1.7, 7.1.4–7.1.5 | Doc | Base case: grid-connected |
-| G2 | Who builds what | Energinet builds the point of connection (POC); developer builds export and onshore cable to the POC and refunds certain Energinet costs | Annex F 1.8, 2.36 | Doc (detail in App 1, not in project files) | Export/onshore cable in developer capex |
+| G2 | Who builds what | Energinet builds the point of connection (POC); developer builds export and onshore cable to the POC and refunds certain Energinet costs | Annex F 1.8, 2.36; NSM: Energinet dok. 23/02056-2 and SGAV draft §25 permit (winner "skal anlægge, eje og drive" the connection to Endrup) | Doc / Ext (detail in App 1, not in project files) | NSM: 45.7 km export cable + 53 km onshore cable to Endrup in capex (step 4, Nov 2026). Hesselø: onshore leg not costed (open) |
 | G3 | Connection contribution – NSS | **DKK 659.6m** excl. VAT at 2026 tariffs = 2 × 400 kV bays × 18.3m + 1,000 MW × 623,000 DKK/MW (production-surplus area); Endrup 400 kV; final amount at tariffs in force when the GCA is signed | Bilag 2.3 (draft) | Doc ⚠ site | One-off capex |
 | G4 | Connection contribution – NSM | ≈ DKK 0.66bn (same rate structure; West Jutland assumed production-surplus area) | — | Asm (verify) | One-off capex |
 | G5 | Connection contribution – Hesselø | Depends on area classification of its North Zealand POC. Consumption-dominated areas carry a much lower per-MW rate (Nov 2024 ministerial answer: 193k vs 663k DKK/MW in production-surplus areas). Base: 193k/MW × 800 MW + 2 × 18.3m ≈ DKK 0.19bn | Ministerial answer KEF spm. 7 (Nov 2024) | Asm (verify) | One-off capex |
-| G6 | Ongoing producer tariffs | 0.50 øre/kWh feed-in + 0.42 øre/kWh balance (2027) ≈ **DKK 9.2/MWh** metered; not reimbursed | Energinet press release 4 Sep 2026; Annex F 11.6.6 | Ext / Doc | Opex per MWh |
+| G6 | Ongoing producer tariffs | 0.50 øre/kWh feed-in + 0.42 øre/kWh balance (2027) ≈ **DKK 9.2/MWh** metered; not reimbursed | Energinet press release 4 Sep 2026; Annex F 11.6.6 | Ext / Doc | Sensitivity only: the DEA guideline counts network charges in fixed O&M (step 7, V6; Nov 2026) |
 | G7 | Grid delivery date / Energinet liability | NSS: connection of MinCap guaranteed by 1 Jul 2030; Energinet liability cap DKK 1.54bn (RE Act §31) | Annex F 7.1.4 | Doc ⚠ site | Not modelled (risk note) |
 | G8 | Unbundling | State may transfer export/onshore cable to Energinet without purchase price (direct transfer costs compensated) | Annex F 12 | Doc | Ignore in base case |
 

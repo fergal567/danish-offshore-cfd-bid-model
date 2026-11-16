@@ -35,8 +35,11 @@ REPO = Path(__file__).resolve().parents[1]
 # --------------------------------------------------------------------------------------
 SITES = {
     # zone: B5 (Asm, verify) · mw: F6 (Doc) · strike: A2 (Ext) · cap: B9 (Doc/Ext, 2025 prices)
-    "NSM": dict(name="Nordsøen Midt", zone="DK1", mw=1005.0, strike=504.0, net_cap_2025_mdkk=15_700.0),
-    "HES": dict(name="Hesselø", zone="DK2", mw=795.0, strike=542.0, net_cap_2025_mdkk=21_900.0),
+    # nss_wake: Nordsøen Syd external wake on NSM from NSS_WAKE_FROM (Asm, Nov 2026 review): NSS lies ≈40 km
+    # S (189°) of the NSM yield point; that ±25° sector carries 14.6 % of NSM's ERA5 energy; ≈10 % in-sector loss
+    # → 1.5 %/yr. Total NSM wake ≈ 12 % internal + 1 % Thor + 1.5 % NSS, inside DTU E-0255's 12–21 % (2030).
+    "NSM": dict(name="Nordsøen Midt", zone="DK1", mw=1005.0, strike=504.0, net_cap_2025_mdkk=15_700.0, nss_wake=0.015),
+    "HES": dict(name="Hesselø", zone="DK2", mw=795.0, strike=542.0, net_cap_2025_mdkk=21_900.0, nss_wake=0.0),
 }
 NPI_MAY2026 = 102.13      # Ext: DST PRIS04 — strike indexation base (A3)
 NPI_MAY2025 = 99.43       # Ext: DST PRIS04 — proxy for the cap's "1 Jun 2025" base (Asm: May index)
@@ -47,7 +50,8 @@ VALUATION_DATE = 2026 + 140 / 365                  # bid deadline 20 May 2026 (P
 PRICE_BASE_DATE = 2026 + 4.5 / 12                  # mid-May 2026: real/nominal crossover (Asm)
 CLIMATE_WEIGHTS = {1995: 0.25, 2008: 0.35, 2009: 0.40}   # Asm (inferred in step 3, method §2)
 AF25_SIM_YEARS = (2030, 2040, 2050)                       # Ext: AF25 dataset
-BASE_INTERNAL_WAKE = 0.10      # step 2 base loss (Asm)
+BASE_INTERNAL_WAKE = 0.12      # step 2 base loss (Asm; 10 % before the Nov 2026 review)
+NSS_WAKE_FROM = 2035           # contract C4: NSS wake on NSM from 2035 (NSS Annex F 7.3.1: operational by end-2034)
 BASE_AVAILABILITY = 0.96       # step 2: 3 % unscheduled + 1 % scheduled (Asm)
 SCHEDULED_DOWNTIME = 0.01      # counts in AAP (B2, Doc); unscheduled does not
 P90_LONG_TERM_SIGMA = 0.06     # Asm: wind resource + model + wake + power-curve uncertainty, 1σ
@@ -352,13 +356,16 @@ class Params:
     aap_factor: float = 1.0
     metered_factor: float = 1.0
     overplant_mw: float = 0.0         # F5: 0 in base (Asm); merchant-only, pro rata, no wake effect
+    ext_wake_late: float = 0.0        # extra external wake from a later neighbour (NSM: Nordsøen Syd), AAP and metered
+    ext_wake_late_from: int = NSS_WAKE_FROM
     # timing
     cod: int = 2033
     cfd_years: int = 20
     life: int = 30
     payment_lag_months: int = 1       # B7 (Doc)
     apply_cap: bool = True            # B9
-    strike_indexation: str = "real"   # "real" = constant real strike; "lagged" = Sep(y−1) NPI reset (A4)
+    strike_indexation: str = "lagged" # A4 (Doc): "lagged" = Sep(y−1) NPI reset (base since the Nov 2026 review);
+                                      # "real" = constant real strike (sensitivity)
     # tax
     tax_rate: float = 0.22
     plant_rate: float = 0.15
@@ -394,7 +401,7 @@ def make_params(inputs: Inputs, site: str, *, capex_case: str = "base", energine
                 opex_case: str = "base", fixed_om_case: str | None = None, var_om_case: str | None = None,
                 decom_case: str = "base", phasing: str = "base", capex_scale: float = 1.0,
                 yield_factor: float = 1.0, internal_wake: float = BASE_INTERNAL_WAKE,
-                availability: float = BASE_AVAILABILITY, life: int = 30,
+                availability: float = BASE_AVAILABILITY, life: int = 30, nss_wake: float | None = None,
                 tax7_scope: str = "cables_and_substation", **overrides) -> Params:
     """Concrete Params from cost_inputs.yaml cases.
 
@@ -402,6 +409,7 @@ def make_params(inputs: Inputs, site: str, *, capex_case: str = "base", energine
     contingency rate and base owner's devex (paired sensitivity, Asm).
     tax7_scope: "cables_and_substation" (base; array + export cables + offshore substation in the
     7 % pool, SKM2025.37.SR) or "export_only" (the step-5 scope, kept as a sensitivity).
+    nss_wake: Nordsøen Syd external wake on NSM from NSS_WAKE_FROM (default SITES[site]["nss_wake"]).
     """
     c = inputs.cost
     s = SITES[site]
@@ -447,6 +455,7 @@ def make_params(inputs: Inputs, site: str, *, capex_case: str = "base", energine
         aap_monthly=prof_m["aap_mwh"].to_numpy(float),
         metered_monthly=prof_m["metered_mwh"].to_numpy(float),
         yield_factor=yield_factor, aap_factor=aap_f, metered_factor=met_f,
+        ext_wake_late=s["nss_wake"] if nss_wake is None else nss_wake,
         life=life,
         tax_rate=c["tax"]["corporate_tax_rate"],
         plant_rate=c["tax"]["pools"]["plant_15pct_db"]["rate"],
@@ -618,6 +627,9 @@ def run_model(p: Params, scen: PriceScenario) -> Result:
     yy = np.repeat(ops_years, 12); mm = np.tile(np.arange(1, 13), len(ops_years))
     aap = np.tile(p.aap_monthly, len(ops_years)) * p.yield_factor * p.aap_factor
     met = np.tile(p.metered_monthly, len(ops_years)) * p.yield_factor * p.metered_factor
+    late_wake = np.where(yy >= p.ext_wake_late_from, 1 - p.ext_wake_late, 1.0)   # e.g. NSS wake on NSM (C4)
+    aap = aap * late_wake
+    met = met * late_wake
     met *= 1 + p.overplant_mw / p.mw                              # overplanting: merchant only (F2)
     rp = np.array([scen.rp_at(y, m) for y, m in zip(yy, mm)])
     neg = np.array([scen.neg_at(y, m) for y, m in zip(yy, mm)])

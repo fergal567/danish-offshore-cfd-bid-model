@@ -23,4 +23,5 @@ Hourly potential output for **Nordsøen Midt** (DK1) and **Hesselø** (DK2): the
 - Energinet / C2Wind, *Lot 3 (North Sea I) Wind Assessment – Supplementary Note*, rev. 3, Nov 2024 (shear 0.07; point A2 P2 long-term mean 10.44 m/s at 150 m).
 - Energinet / EMD, *Hesselø South Site Wind Conditions Assessment*, rev. 3, Dec 2025 (shear 0.09; long-term means 9.58–9.67 m/s at 150 m; site coordinates).
 - DTU Wind report E-0255 (2025) for the DEA, *Environmental Mapping and Screening of the Offshore Wind Potential in Denmark – Wind*: domain wake losses 6.6–12 % (current fleet), 12–21 % (2030 scenario).
-- DEA Step-by-Step Guide (Mar 2026) Table 1.5: interim estimate 4,479 GWh/yr for 1 GW at Nordsøen Midt.
+- DEA Step-by-Step Guide (Mar 2026) Table 1.5: interim estimate 4,479 GWh/yr for 1 GW at Nordsøen Midt. After the Nov 2026 review (12 % internal wake, Hesselø Weibull A 10.87) the model gives 4,690 GWh per GW of AAP (+4.7 %, before Nordsøen Syd's wake, which step 5 applies from 2035) and 49.9 % AAP capacity factor at Hesselø.
+- Energinet, *Projektbeskrivelse for Landanlæg, Nordsøen I Midt* (dok. 23/02056-2, Nov 2025): landfall just south of Nymindegab, 45.7 km from the NSM yield point (56.00 N, 7.55 E).

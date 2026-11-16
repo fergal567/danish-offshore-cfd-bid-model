@@ -1,7 +1,7 @@
 """Figures for the one-page summary (summary/project1_summary.tex).
 
-Values are copied from step5/bid_calibration_memo.md (21 Oct 2026, step-7 re-run) and
-step5/outputs/tornado.csv, real 2026 DKK.
+Values are copied from step5/bid_calibration_memo.md (re-run 16 Nov 2026 after the external
+review), step5/outputs/tornado.csv, scenarios.csv and other_checks.csv, real 2026 DKK.
 If step 5 is re-run, update the numbers below to match the memo.
 
 Figures are drawn at the size they are printed (the .tex includes them at their natural
@@ -25,7 +25,7 @@ FS = 8.5            # printed font size (pt)
 TEXT_W = 6.85       # printed text width of the A4 page (in), 1.8 cm margins
 
 plt.rcParams.update({
-    "font.family": "Liberation Sans",
+    "font.family": ["Liberation Sans", "Arial", "DejaVu Sans"],  # Arial is metric-compatible
     "font.size": FS,
     "axes.edgecolor": INK,
     "axes.labelcolor": INK,
@@ -45,8 +45,9 @@ plt.rcParams.update({
 
 # ---------------------------------------------------------------- gap chart
 # (name, awarded, base break-even, (lowest, highest) break-even across the modelling
-# choices in step5/outputs/other_checks.csv, i.e. the model's own judgement-call band)
-sites = [("Nordsøen Midt", 504, 532.6, (515.2, 554.6)), ("Hesselø", 542, 559.4, (540.6, 583.5))]
+# choices in step5/outputs/other_checks.csv excluding "no net cap", i.e. the model's own
+# judgement-call band: FID 2030 phasing / tail discounted at the tail rate from today)
+sites = [("Nordsøen Midt", 504, 713.3, (619.2, 928.9)), ("Hesselø", 542, 577.2, (557.5, 602.1))]
 
 fig, ax = plt.subplots(figsize=(TEXT_W * 0.48, 1.9))
 for i, (name, awarded, breakeven, (b_lo, b_hi)) in enumerate(sites):
@@ -55,15 +56,15 @@ for i, (name, awarded, breakeven, (b_lo, b_hi)) in enumerate(sites):
     ax.plot([awarded, breakeven], [y, y], color=ACCENT, lw=2.4, zorder=1)
     ax.scatter(awarded, y, s=50, facecolor="white", edgecolor=INK, lw=1.3, zorder=2)
     ax.scatter(breakeven, y, s=50, color=INK, zorder=2)
-    ax.text(awarded - 3, y, f"{awarded}", ha="right", va="center")
-    ax.text(breakeven + 3, y, f"{breakeven:.0f}", ha="left", va="center")
+    ax.text(awarded - 13, y, f"{awarded}", ha="right", va="center")
+    ax.text(breakeven + 13, y, f"{breakeven:.0f}", ha="left", va="center")
     gap = breakeven - awarded
     ax.text((awarded + breakeven) / 2, y + 0.24, f"+{gap:.0f} (+{gap / awarded:.1%})",
             ha="center", va="bottom", color=ACCENT)
 ax.set_yticks([1, 0], [s[0] for s in sites])
 ax.set_ylim(-0.55, 1.75)
-ax.set_xlim(485, 595)
-ax.set_xticks(range(500, 591, 30))
+ax.set_xlim(440, 960)
+ax.set_xticks(range(500, 901, 100))
 ax.set_xlabel("Strike price, DKK/MWh (real 2026)")
 ax.spines["left"].set_visible(False)
 handles = [
@@ -78,8 +79,9 @@ fig.savefig(OUT / "fig_gap.png", dpi=300)
 plt.close(fig)
 
 # ------------------------------------------------------------- tornado chart
-# Same input order in both panels. None = no break-even strike exists.
-# (low case, high case); a value above XMAX means the subsidy cap binds.
+# Same input order in both panels. (low case, high case); None = no favourable case shown,
+# NB = no break-even strike exists (the subsidy cap binds); a value above the panel's xmax is drawn
+# at the edge. At Nordsøen Midt the cap already binds at the base break-even (713).
 rows = [
     "Capex",
     "Discount rate",
@@ -90,25 +92,26 @@ rows = [
     "Asset life (35 / 25 yrs)",
     "Availability 93.5 %",
 ]
+NB = float("inf")
 data = {
-    "Nordsøen Midt": dict(base=533, awarded=504, vals=[
-        (456, 977), (474, 811), (504, 727), (493, 581), (526, None), (None, 606), (512, 562), (None, 547)]),
-    "Hesselø": dict(base=559, awarded=542, vals=[
-        (477, 656), (498, 657), (530, 631), (517, 609), (553, 584), (None, 591), (537, 591), (None, 575)]),
+    "Nordsøen Midt": dict(base=713, awarded=504, xlim=(470, 960), ticks=range(500, 901, 100), vals=[
+        (522, NB), (545, NB), (597, NB), (570, 1160), (607, NB), (None, NB), (616, 1046), (None, 804)]),
+    "Hesselø": dict(base=577, awarded=542, xlim=(455, 715), ticks=range(500, 701, 50), vals=[
+        (490, 678), (512, 680), (548, 659), (533, 629), (571, 602), (None, 610), (553, 610), (None, 593)]),
 }
-XMIN, XMAX = 425, 760
 SMALL = FS - 0.5
 
 fig, axes = plt.subplots(1, 2, figsize=(TEXT_W, 2.75), sharey=True)
 for ax, (site, d) in zip(axes, data.items()):
     base = d["base"]
+    XMIN, XMAX = d["xlim"]
     for i, (lo, hi) in enumerate(d["vals"]):
         y = len(rows) - 1 - i
         if lo is not None:
             ax.barh(y, lo - base, left=base, height=0.64, color=LIGHT, edgecolor="none")
             ax.text(lo - 4, y, f"{lo}", ha="right", va="center", fontsize=SMALL,
                     bbox=dict(facecolor="white", edgecolor="none", pad=0.5))
-        if hi is None and i == 4:  # no strike gives NPV = 0
+        if hi == NB:  # no strike gives NPV = 0
             ax.barh(y, XMAX - base, left=base, height=0.64, color=ACCENT, edgecolor="none")
             ax.text(XMAX - 6, y, "no break-even", ha="right", va="center",
                     fontsize=SMALL, color="white")
@@ -124,7 +127,7 @@ for ax, (site, d) in zip(axes, data.items()):
     ax.text(d["awarded"] - 4, -1.05, f"awarded {d['awarded']}", fontsize=SMALL,
             va="center", ha="right")
     ax.set_xlim(XMIN, XMAX)
-    ax.set_xticks(range(450, 701, 50))
+    ax.set_xticks(d["ticks"])
     ax.set_ylim(-1.5, len(rows) - 0.4)
     ax.set_title(site, fontsize=FS + 0.5, loc="left", fontweight="bold", color=INK)
     ax.spines["left"].set_visible(False)
@@ -132,7 +135,7 @@ for ax, (site, d) in zip(axes, data.items()):
 axes[0].set_yticks(range(len(rows)), rows[::-1])
 fig.legend(handles=[Patch(color=LIGHT, label="Favourable case"),
                     Patch(color=MID, label="Unfavourable case"),
-                    Patch(color=ACCENT, label="Unfavourable, payment cap binds")],
+                    Patch(color=ACCENT, label="Unfavourable, no break-even or off scale (cap binds)")],
            loc="upper right", ncol=3, frameon=False, bbox_to_anchor=(1, 1.02),
            handlelength=1.2, columnspacing=1.0)
 fig.tight_layout(pad=0.2, rect=(0, 0, 1, 0.92))

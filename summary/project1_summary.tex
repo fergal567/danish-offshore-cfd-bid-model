@@ -1,7 +1,7 @@
 % Project 1 one-page summary. Build from this folder: pdflatex project1_summary.tex
 % Figures: run `python summary/make_figures.py` from the repo root first. They are drawn at
 % their printed size, so chart text matches the page's small text.
-% Numbers are from step5/bid_calibration_memo.md (21 Oct 2026, after the step-7 re-run; wording revised 16 Nov 2026),
+% Numbers are from step5/bid_calibration_memo.md (re-run 16 Nov 2026 after the external review),
 % real 2026 DKK; EUR at DKK 7.46.
 \documentclass[10pt,a4paper]{article}
 \usepackage[T1]{fontenc}
@@ -36,7 +36,7 @@
 
 \vspace{8pt}
 \rule{\linewidth}{0.8pt}\par\vspace{6pt}
-Vattenfall's prices are 3--6\,\% below my base-case break-even, a gap within the model's own uncertainty. They are consistent with a real after-tax return of about 4.5--5\,\%, inside Vattenfall's own range for wind, and need the DEA's FID-2030 costs (20\,MW-class turbines). With the DEA's own capture ratio, break-even rises to 591--606.\par
+Hesselø's price is 6.5\,\% below my base-case break-even, about one judgement call: consistent with a real after-tax return of about 4.5\,\%, mid-range for Vattenfall's wind business, at the DEA's FID-2030 costs. Nordsøen Midt's is not close: once its developer-built grid link to Endrup is costed, it implies 3.4\,\%, below that range.\par
 \vspace{6pt}\rule{\linewidth}{0.8pt}\par
 
 \begin{minipage}[t]{0.48\textwidth}
@@ -48,24 +48,24 @@ Vattenfall's prices are 3--6\,\% below my base-case break-even, a gap within the
 \begin{tabular}{@{}>{\raggedright\arraybackslash}p{0.42\linewidth}>{\raggedleft\arraybackslash}p{0.29\linewidth}>{\raggedleft\arraybackslash}p{0.19\linewidth}@{}}
  & Nordsøen Midt & Hesselø \\
 \midrule
-Return, real after tax & 4.5\,\% & 4.7\,\% \\[2pt]
-Build cost, DKK m/MW & 20.9 & 21.4 \\[2pt]
-Wind output vs P50 & +6\,\% & +3\,\% \\
+Return, real after tax & 3.4\,\% & 4.5\,\% \\[2pt]
+Build cost, DKK m/MW & 20.2 & 20.7 \\[2pt]
+Wind output vs P50 & +20\,\% & +6\,\% \\
 \bottomrule
 \end{tabular}\par
 \vspace{5pt}
-\note{Base: 5.0\,\% return (tail +2\,pp), DKK 22.3m/MW, P50 output. Vattenfall's wind impairment rate is about 3.6--5.3\,\% real (my inference).}
+\note{Base: 5.0\,\% return (tail +2\,pp), DKK 25.2m / 22.2m per MW, P50 output. Vattenfall's wind impairment rate is about 3.6--5.3\,\% real (my inference).}
 \end{minipage}
 
 \head{What moves the break-even price}
 \includegraphics[width=\linewidth]{fig_tornado_summary.png}\par
 \vspace{3pt}
-\note{One input at a time. Red: the state's cap on CfD payments is used up, so a higher strike adds little value. S1-B$'$: the DEA's published capture ratio.}
+\note{One input at a time. Red: the state's cap on CfD payments is used up, so no strike, or only a very high one, breaks even; at Nordsøen Midt it already binds at the base. S1-B$'$: the DEA's capture ratio.}
 
 \vspace{2pt}
 \begin{minipage}[t]{0.48\textwidth}
 \head{The bigger risk: the payment cap}
-The cap funds an average top-up of DKK 167/MWh at Nordsøen Midt but 313 at Hesselø. In my low-price stress case it runs out at Nordsøen Midt around 2047 (roughly DKK 5.5bn unpaid). Hesselø never uses more than 76\,\%.
+The cap funds an average top-up of DKK 173/MWh at Nordsøen Midt but 324 at Hesselø. In my low-price stress case it runs out at Nordsøen Midt around 2048 (roughly DKK 4bn unpaid). Hesselø never uses more than 71\,\%.
 \end{minipage}\hfill
 \begin{minipage}[t]{0.48\textwidth}
 \head{What it means for the next tender}

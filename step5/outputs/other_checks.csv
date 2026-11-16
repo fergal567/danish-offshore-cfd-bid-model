@@ -1,12 +1,14 @@
 case,NSM NPV,NSM BE strike,HES NPV,HES BE strike
-Base,-988.8,532.6,-447.5,559.4
-Tail discounted at tail WACC from today ('full'),-1743.3,554.6,-1065.5,583.5
-"Strike indexation lag (Sep(y−1) NPI reset, A4)",-1258.2,541.0,-664.0,568.2
-No payment lag (B7 off),-963.7,531.7,-428.2,558.5
-No net cap (B9 off),-988.8,532.6,-447.5,559.4
-Standalone tax (SEL §12),-1161.4,536.8,-555.0,563.1
-Export cable at 15 % (§5C stk. 1),-801.3,527.2,-290.0,553.3
-Early phasing (FID 2028),-1486.0,547.0,-846.0,574.9
-Late phasing (FID 2030),-386.3,515.2,35.4,540.6
-Energinet contribution high,-1034.7,534.0,-694.5,569.0
-Decommissioning 15 %,-1123.6,536.5,-554.2,563.6
+Base,-3562.1,713.3,-861.2,577.2
+Tail discounted at tail WACC from today ('full'),-4304.8,928.9,-1469.6,602.1
+Constant real strike (no Sep(y−1) NPI reset lag),-3302.0,702.4,-651.8,568.2
+"Energinet producer tariffs charged (O4, 9.2 DKK/MWh)",-3923.8,793.5,-1131.2,588.2
+No Nordsøen Syd wake (NSM),-3331.5,678.9,-861.2,577.2
+No payment lag (B7 off),-3539.5,705.0,-843.8,576.2
+No net cap (B9 off),-3562.1,612.5,-861.2,577.2
+Standalone tax (SEL §12),-3793.4,732.5,-978.6,581.1
+Export cable at 15 % (§5C stk. 1),-3299.8,670.2,-703.7,570.7
+Early phasing (FID 2028),-4118.9,851.3,-1259.6,593.5
+Late phasing (FID 2030),-2885.0,619.2,-378.2,557.5
+Energinet contribution high,-3608.1,722.0,-1108.2,587.3
+Decommissioning 15 %,-3695.7,739.6,-967.8,581.5
